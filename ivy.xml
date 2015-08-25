@@ -1,0 +1,44 @@
+<ivy-module version="2.0">
+  <info organisation="cloud.cave" module="skycave"/>
+
+  <!-- Crunch reuses parts of the SkyCave code base which is most
+       conveniently handled by publishing it to the local Ivy
+       repository. Not necessarily relevant for the student's solution
+       work -->
+  <publications>
+    <artifact name="skycave" 
+	      type="jar" ext="jar"/>
+    <artifact name="skycave" 
+	      type="javadoc" ext="jar"/>
+  </publications>
+
+  <!-- The 3rd party modules that we rely on in SkyCave -->
+  <dependencies>
+    <!-- JUnit testing and matchers -->
+    <dependency org="junit" 
+		name="junit" 
+		rev="4.11"/>
+    <dependency org="org.hamcrest" 
+		name="hamcrest-library" 
+		rev="1.3"/>
+    
+    <!-- Simple JSON library -->
+    <dependency org="com.googlecode.json-simple" 
+		name="json-simple" 
+		rev="1.1.1"/>
+    
+    <!-- SLF4J logging and binding to Log4J -->
+    <dependency org="org.slf4j" 
+		name="slf4j-api" 
+		rev="1.7.6"/>
+    <dependency org="org.slf4j" 
+		name="slf4j-log4j12" 
+		rev="1.7.6"/>
+
+    <!-- jBCrypt for password prototection -->
+    <dependency org="org.mindrot" 
+                name="jbcrypt" 
+                rev="0.3m"/>
+  </dependencies>
+
+</ivy-module>

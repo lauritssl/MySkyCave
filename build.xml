@@ -1,0 +1,319 @@
+<!-- SkyCave Mandatory project for CloudArch course.
+
+        NOTE! You may add more targets, but do not modify
+        the existing as we rely on them during our evaluations
+        at the gates. (Unless we tell you to do so due to
+        bugs in them :-)
+  
+     Author: Henrik Baerbak Christensen, CS at Aarhus University
+-->
+<project name="cave" default="help" basedir="."
+	 xmlns:ivy="antlib:org.apache.ivy.ant"
+         xmlns:jacoco="antlib:org.jacoco.ant">
+
+  <target name="help">
+    <echo>
+SkyCave starter kit for the "Cloud Computing and Architecture" course.
+  Development Targets 
+
+    clean:     Remove all intermediate files and folders
+
+    test:      Run JUnit test cases
+    coverage:  Produce test coverage report
+
+    javadoc:   Generate javadoc for production code
+
+  Execution targets
+    daemon:        Run SkyCave application server daemon.
+    cmd:           Run the SkyCave command line.
+
+    Both require that the configuration is set, which is done
+      through setting environment variables to configure both
+      the AbstractFactories that inject the wanted delegates as
+      well as environment variables that define IP/host addresses and
+      ports. See course web site/slides for details.
+
+    Regarding the client, to change the player to enter the cave, 
+      use Ant properties 'id' and 'pwd', like for instance
+
+      ant -Did=mathilde_aarskort -Dpwd=321 cmd
+
+  For other targets, execute 'ant -p' to see the full list...
+
+  Henrik Baerbak Christensen, Aarhus University, 2015 
+    </echo>
+  </target>
+
+  <!-- Folder properties -->
+  <property name="src.dir" value="src" />  
+  <property name="test.dir" value="test" />
+
+  <property name="lib.dir" value="lib" />
+  <property name="build.dir" value="build" />
+
+  <property name="resource.dir" value="resource" />
+
+  <property name="javadoc.dir" value="javadoc" />
+
+  <!-- JaCoCo Coverage analysis -->
+  <taskdef uri="antlib:org.jacoco.ant" 
+	   resource="org/jacoco/ant/antlib.xml">
+    <classpath path="lib-core/jacocoant.jar"/>
+  </taskdef>
+
+  <property name="test.output.directory" value="TEST-RESULT"/>
+  <property name="jacoco.report.dir" value="${test.output.directory}/report" />
+  <property name="jacoco.exec" value="${test.output.directory}/jacoco.exec" />
+
+  <!-- Paths used for compilation and run -->
+  <path id="lib.path.id">
+    <fileset dir="${lib.dir}" />
+  </path>
+
+  <path id="run.path.id">
+    <path refid="lib.path.id" />
+    <path location="${build.dir}" />
+  </path>
+  
+  <!-- House holding -->
+  <target name="clean" 
+          description="--> Clean everything, remove all .class and lib files">
+    <delete dir="${build.dir}"/>
+    <delete dir="${lib.dir}"/>
+    <delete dir="${test.output.directory}"/>
+    <delete dir="${javadoc.dir}"/>
+  </target>
+  
+  <target name="prepare">
+    <mkdir dir="${build.dir}"/>
+    <mkdir dir="${lib.dir}"/>
+    <mkdir dir="${test.output.directory}"/>
+    <mkdir dir="${javadoc.dir}"/>
+  </target>
+  
+  <!-- Ivy dependency management -->
+  <target name="resolve" 
+	  description="--> Retrieve dependencies with Ivy">
+    <ivy:retrieve/>
+  </target>    
+  
+  <target name="report" depends="resolve" 
+	  description="--> Generates a report of dependencies for Ivy">
+    <ivy:report todir="${build.dir}"/>
+  </target>
+
+  <!-- Compilation tasks -->
+  <target name="build.src" depends="prepare,resolve"
+          description="--> Compile production code source files">
+    <javac srcdir="${src.dir}"
+	   destdir="${build.dir}"
+	   debug="on" 
+	   classpathref="lib.path.id" 
+	   includeAntRuntime="false">
+    </javac>
+  </target>
+
+  <target name="build.test" depends="build.src"
+          description="--> Compile test code source files">
+    <javac srcdir="${test.dir}"
+	   destdir="${build.dir}"
+	   debug="on" 
+	   classpathref="lib.path.id" 
+	   includeAntRuntime="false">
+    </javac>
+  </target>
+
+  <!-- Resources to be put into their proper place -->
+  <target name="copy.resource">
+    <copy file="${resource.dir}/log4j.properties" todir="${build.dir}"/>
+  </target>
+  
+  <!-- Build everything -->
+  <target name="build.all" 
+	  depends="build.test,copy.resource"
+          description="--> Build everything"/>
+
+  <!-- JUnit testing -->
+  <target name="test"  depends="build.all"
+          description="--> Run JUnit unit and integration tests">
+    <junit printsummary="yes" fork="yes" 
+	   forkmode="once"
+	   haltonfailure="yes">
+      <formatter type="plain"/>
+      <batchtest fork="yes" todir="${test.output.directory}">
+	<fileset dir="${test.dir}">
+	  <include name="**/Test*.java"/>
+	</fileset>
+      </batchtest>
+      <classpath refid="run.path.id"/>
+    </junit>
+  </target>
+
+  <!-- Run JUnit with JaCoCo code coverage -->
+  <target name="run.junit" depends="build.all"
+          description="--> Run JUnit and generate coverage data for all tests">
+    <jacoco:coverage destfile="${jacoco.exec}" >
+      <junit printsummary="yes" fork="yes" 
+	     forkmode="once"
+	     haltonfailure="yes">
+	<formatter type="plain"/>
+	<batchtest fork="yes" todir="${test.output.directory}">
+	  <fileset dir="${test.dir}">
+	    <include name="**/Test*.java"/>
+	  </fileset>
+	</batchtest>
+	<classpath refid="run.path.id"/>
+      </junit>
+    </jacoco:coverage>
+  </target>
+
+  <!-- Make JaCoCo generate a HTML based report of code coverage -->
+  <target name="coverage" depends="run.junit"
+	  description="--> Generate code coverage report in the report directory">
+    <jacoco:report>
+      <executiondata>
+        <file file="${jacoco.exec}"/>
+      </executiondata>
+      <structure name="Coverage of SkyCave" >
+        <classfiles>
+          <fileset dir="${build.dir}">
+            <!-- We do not generate coverage for the test case source code
+                 nor the socket based impl. The former is not production code
+                 the latter is tested manually -->
+	    <exclude name="**/Test*"/>
+	    <exclude name="**/socket/**"/>
+	  </fileset>
+        </classfiles>
+        <sourcefiles encoding="UTF-8" tabwidth="2">
+	  <fileset dir="${src.dir}"/>
+        </sourcefiles>
+      </structure>
+      <html destdir="${jacoco.report.dir}"/>
+    </jacoco:report>
+    <echo message="To see report, browse to index.html in ${jacoco.report.dir}."/>
+  </target>
+
+  <!-- Interal target for batch processing -->
+  <target name="coverage.batch"
+	  description="--> Generate code coverage in CSV for batch processing.">
+    <jacoco:report>
+      <executiondata>
+        <file file="${jacoco.exec}"/>
+      </executiondata>
+      <structure name="Coverage of SkyCave" >
+        <classfiles>
+          <fileset dir="${build.dir}">
+	    <include name="**/*.class"/>
+	  </fileset>
+        </classfiles>
+        <sourcefiles encoding="UTF-8" tabwidth="2">
+	  <fileset dir="${src.dir}"/>
+	  <fileset dir="${test.dir}"/>
+        </sourcefiles>
+      </structure>
+
+      <csv destfile="${test.output.directory}/coverage-report.csv"/>
+
+    </jacoco:report>
+
+    <echo message="CSV report in folder: ${test.output.directory}."/>
+  </target>
+
+  <!-- Java Doc generateion -->
+  <target name="javadoc" depends="build.src"
+	  description="--> Generate javadoc in folder ${javadoc.dir}">
+    <javadoc
+       source = "1.7"
+       packagenames=
+       "cloud.*"
+       sourcepath="${src.dir}"
+       destdir="${javadoc.dir}"
+       package="true"
+       doctitle="&lt;b&gt;Cloud Computing and Architecture: SkyCave&lt;/b&gt;"
+       bottom="Henrik Baerbak Christensen, University of Aarhus, Denmark"
+       windowtitle="SkyCave">
+      <sourcepath>
+	<path location="${src.dir}"/>
+      </sourcepath>
+      <classpath>
+	<path refid="run.path.id"/>
+      </classpath>
+    </javadoc>
+    <echo message="Javadoc is in folder: ${javadoc.dir}."/>
+  </target>
+
+  <!--- Execution -->
+  <property name="id" value="mikkel_aarskort"/>
+  <property name="pwd" value="123"/>
+
+  <!-- Server daemon -->
+  <target name="daemon" 
+          depends="build.all" 
+          description="--> * Execute the server daemon">
+    <java classpathref="run.path.id" 
+	  classname="cloud.cave.main.CaveDaemon">
+    </java>
+  </target>
+
+  <!-- Client command interpreter -->
+  <target name="cmd" 
+          depends="build.all" 
+          description="--> * Execute the command line client">
+    <java classpathref="run.path.id" 
+	  classname="cloud.cave.main.CaveCmd">
+      <arg value="${id}"/>
+      <arg value="${pwd}"/>
+    </java>
+  </target>
+
+  <!-- Tasks relevant for the Crunch system, not really
+       interesting for the student's solution work. KEEP THEM -->
+
+  <property name="jar.dir" value="jar"/>
+
+  <!-- Jar core src byte code and javadoc -->
+  <target name="jar.core"
+	  depends="build.all,javadoc"
+	  description="--> (Create Jar of production code)"
+	  >
+    <delete dir="${jar.dir}"/>
+    <jar destfile="${jar.dir}/skycave-jar.jar">
+      <fileset dir="${build.dir}" />
+      <manifest>
+        <attribute name="Built-By" value="Henrik Baerbak"/>
+      </manifest>
+    </jar>
+    <jar destfile="${jar.dir}/skycave-javadoc.jar">
+      <fileset dir="${javadoc.dir}" />
+      <manifest>
+        <attribute name="Built-By" value="Henrik Baerbak"/>
+      </manifest>
+    </jar>
+  </target>
+
+  <!-- Publish jars into local Ivy repository -->
+  <target name="install"
+	  depends="jar.core"
+	  description="--> (Install SkyCave src as ivy module in local repo)">
+    <ivy:resolve/>
+    <ivy:publish pubrevision="1.0"
+		 resolver="local" 
+		 status="release"
+		 overwrite="true">
+      <artifacts pattern="${jar.dir}/[artifact]-[type].[ext]"/>
+    </ivy:publish>
+  </target>
+
+  <target name="review"
+	  depends="clean,coverage"
+	  description="--> (Create zip with code and tests for evaluator review)">
+    <delete file="review.zip"/>
+    <echo message="*** Creating 'review.zip' for evaluator review ***"/>
+    <zip destfile="review.zip"
+	 basedir="."
+	 includes="build.xml, ivy.xml, *.sh, src/, test/, TEST-RESULT/*, resource/, lib-core/" />
+
+  </target>
+
+
+</project>
