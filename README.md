@@ -31,7 +31,7 @@ as supporting incremental development work and alternative
 implementations of protocols, databases, service connectors, etc. The
 configurability is controlled by *environment variables*, all of which
 are prefixed by SKYCAVE_. Review the shell scripts (.bat and .sh
-files) that are called 'setup...' or 'cfg...' to see examples.
+files) that are called **'setup...'** or 'cfg...' to see examples.
 
 What to do next?
 ----------------
