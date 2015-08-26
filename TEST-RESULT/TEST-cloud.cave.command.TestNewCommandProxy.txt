@@ -1,6 +1,0 @@
-Testsuite: cloud.cave.command.TestNewCommandProxy
-Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.05 sec
-
-Testcase: shouldExecuteHomeCommand took 0.017 sec
-Testcase: shouldExecuteJumpCommand took 0.018 sec
-Testcase: shouldNotExecuteUnknownCommand took 0.011 sec

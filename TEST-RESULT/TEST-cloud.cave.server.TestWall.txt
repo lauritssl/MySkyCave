@@ -1,4 +1,0 @@
-Testsuite: cloud.cave.server.TestWall
-Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.021 sec
-
-Testcase: shouldWriteToAndReadWall took 0.02 sec

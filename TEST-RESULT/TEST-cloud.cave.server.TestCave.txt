@@ -1,9 +1,0 @@
-Testsuite: cloud.cave.server.TestCave
-Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.088 sec
-
-Testcase: shouldWarnIfMathildeLogsInASecondTime took 0.018 sec
-Testcase: shouldDescribeConfiguration took 0.009 sec
-Testcase: shouldNotAllowLoggingOutMathildeTwice took 0.014 sec
-Testcase: shouldAllowLoggingOutMagnus took 0.014 sec
-Testcase: shouldAllowAddingPlayers took 0.014 sec
-Testcase: shouldRejectUnknownSubscriptions took 0.013 sec
