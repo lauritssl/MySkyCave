@@ -2,9 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="d114ff41-930a-447a-af17-adaddec09ee2" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/SkyCave.iml" afterPath="$PROJECT_DIR$/.idea/SkyCave.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/skycave.log" afterPath="$PROJECT_DIR$/skycave.log" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.gitignore" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="SkyCave.iws" />
@@ -552,12 +550,12 @@
       <updated>1440502128940</updated>
       <workItem from="1440502132688" duration="2018000" />
       <workItem from="1440505347046" duration="4452000" />
-      <workItem from="1440582792128" duration="3192000" />
+      <workItem from="1440582792128" duration="3450000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="9662000" />
+    <option name="totallyTimeSpent" value="9920000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1280" height="800" extended-state="0" />
