@@ -68,7 +68,7 @@ public class TestInterpreter {
     
     // weather
     assertThat(output, containsString("The weather at: COPENHAGEN"));
-    assertThat(output, containsString("NOT IMPLEMENTED YET"));
+    //assertThat(output, containsString("NOT IMPLEMENTED YET"));
     
     // sys
     assertThat(output, containsString("ClientRequestHandler: cloud.cave.doubles.LocalMethodCallClientRequestHandler"));

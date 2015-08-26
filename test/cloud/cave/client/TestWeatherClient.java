@@ -47,14 +47,12 @@ public class TestWeatherClient {
   @Test
   public void shouldGetWeatherClientSide() {
     String weather = player.getWeather();
-    
-    // TODO: Exercise - solve the 'weather-client' exercise
-    assertThat(weather, containsString("NOT IMPLEMENTED YET"));
-  
-    /**
+
+    //Checking if fake weather info is returned
+
     assertThat(weather, containsString("The weather in AARHUS is Clear, temperature 27.4C (feelslike -2.7C). Wind: 1.2 m/s, direction West."));
     assertThat(weather, containsString("This report is dated: Thu, 05 Mar 2015 09:38:37 +0100"));
-    */
+
   }
 
 }

@@ -121,6 +121,11 @@ public class PlayerDispatcher implements Dispatcher {
 
         reply = player.execute(commandName, parameters);
       }
+      // === WEATHER
+      else if (methodKey.equals(MarshalingKeys.GET_WEATHER_METHOD_KEY)) {
+        reply = Marshaling
+                .createValidReplyWithReturnValue(player.getWeather());
+      }
     } catch (PlayerSessionExpiredException exc) {
       reply = Marshaling.createInvalidReplyWithExplantion(StatusCode.SERVER_PLAYER_SESSION_EXPIRED_FAILURE,
           exc.getMessage());

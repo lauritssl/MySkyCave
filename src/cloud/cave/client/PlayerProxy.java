@@ -180,8 +180,11 @@ public class PlayerProxy implements Player {
 
   @Override
   public String getWeather() {
-    // TODO Empty stub, to be implemented by students
-    return "NOT IMPLEMENTED YET";
+      JSONObject requestJson = createRequestObject(MarshalingKeys.GET_WEATHER_METHOD_KEY, "");
+      JSONObject replyJson = requestAndAwaitReply(requestJson);
+
+      String weather = replyJson.get(MarshalingKeys.RETURNVALUE_HEAD_KEY).toString();
+      return weather;
   }
 
   @Override
