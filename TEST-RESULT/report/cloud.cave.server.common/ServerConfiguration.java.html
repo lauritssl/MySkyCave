@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>ServerConfiguration.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=2;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Coverage of SkyCave</a> &gt; <a href="index.source.html" class="el_package">cloud.cave.server.common</a> &gt; <span class="el_source">ServerConfiguration.java</span></div><h1>ServerConfiguration.java</h1><pre class="source lang-java linenums">package cloud.cave.server.common;
+
+import cloud.cave.config.*;
+
+/**
+ * Record that defines the server information for a cluster of nodes.
+ * 
+ * @author Henrik Baerbak Christensen, Aarhus University.
+ *
+ */
+public class ServerConfiguration {
+
+  private ServerData data0;
+  
+  /** Create a server configuration by reading an environment variable.
+   * The strategy used to do the actual read is defined by the reader
+   * strategy. The environment variable must be in the format 
+   * &quot;(ip0):(port0),(ip1):(port1)&quot; i.e. comma separated lists of
+   * ip addresses and ports.
+   * 
+   * @param environmentReader the strategy used to read the variable
+   * @param environmentVariable the variable to read as a server
+   * configuration, like e.g. SKYCAVE_APPSERVER. 
+   */
+  // TODO: LATER - ServerConfiguration only handles a single server, not a cluster
+  public ServerConfiguration(EnvironmentReaderStrategy environmentReader, 
+<span class="fc" id="L27">      String environmentVariable) {</span>
+<span class="fc" id="L28">    String asString = Config.failFastRead(environmentReader, environmentVariable);</span>
+    
+<span class="fc" id="L30">    String[] tokens = asString.split(&quot;:&quot;);</span>
+<span class="fc" id="L31">    data0 = new StandardServerData(tokens[0], Integer.parseInt(tokens[1]));</span>
+<span class="fc" id="L32">  }</span>
+  
+  /**
+   * Create a server configuration directly. Should not be used except for the
+   * test code.
+   * 
+   * @param ip
+   *          the ip or hostname of the server/service
+   * @param port
+   *          the port number of the server/service
+   */
+<span class="fc" id="L43">  public ServerConfiguration(String ip, int port) {</span>
+<span class="fc" id="L44">    data0 = new StandardServerData(ip, port);</span>
+<span class="fc" id="L45">  }</span>
+
+  public ServerData get(int index) {
+<span class="pc bpc" id="L48" title="2 of 4 branches missed.">    if ( index &gt; 0 ) { throw new RuntimeException(&quot;ServerConfiguration: get not implemented in detail yet&quot;); }</span>
+<span class="fc" id="L49">    return data0;</span>
+  }
+
+  @Override
+  public String toString() {
+<span class="fc" id="L54">    return &quot;ServerConfiguration [serverData=&quot; + data0 + &quot;]&quot;;</span>
+  }
+  
+}
+
+class StandardServerData implements ServerData {
+
+  private String hostName;
+  private int portNumber;
+
+<span class="fc" id="L64">  public StandardServerData(String hostName, int portNumber) {</span>
+<span class="fc" id="L65">    this.hostName = hostName;</span>
+<span class="fc" id="L66">    this.portNumber = portNumber;</span>
+<span class="fc" id="L67">  }</span>
+
+  @Override
+  public String getHostName() {
+<span class="fc" id="L71">    return hostName;</span>
+  }
+
+  @Override
+  public int getPortNumber() {
+<span class="fc" id="L76">    return portNumber;</span>
+  }
+
+  @Override
+  public String toString() {
+<span class="fc" id="L81">    return hostName + &quot;:&quot; + portNumber;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201506030918</span></div></body></html>

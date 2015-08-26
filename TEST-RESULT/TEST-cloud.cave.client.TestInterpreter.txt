@@ -1,0 +1,7 @@
+Testsuite: cloud.cave.client.TestInterpreter
+Tests run: 3, Failures: 0, Errors: 0, Skipped: 1, Time elapsed: 0.064 sec
+
+Testcase: shouldReportIfUserGivesWrongCredentials took 0 sec
+	SKIPPED
+Testcase: shouldReportIfUserIsAlreadyLoggedIn took 0.019 sec
+Testcase: shouldSeeProperOutputForAllCommands took 0.038 sec

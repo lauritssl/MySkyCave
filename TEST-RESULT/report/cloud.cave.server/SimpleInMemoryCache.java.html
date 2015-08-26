@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>SimpleInMemoryCache.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=2;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Coverage of SkyCave</a> &gt; <a href="index.source.html" class="el_package">cloud.cave.server</a> &gt; <span class="el_source">SimpleInMemoryCache.java</span></div><h1>SimpleInMemoryCache.java</h1><pre class="source lang-java linenums">package cloud.cave.server;
+
+import java.util.*;
+
+import cloud.cave.domain.Player;
+
+/**
+ * Implementation of the player session cache using a Map data structure.
+ * 
+ * @author Henrik Baerbak Christensen, Aarhus University.
+ * 
+ */
+public class SimpleInMemoryCache implements PlayerSessionCache {
+
+  private Map&lt;String,Player&gt; cacheOfOnlinePlayer;
+ 
+<span class="fc" id="L17">  public SimpleInMemoryCache() {</span>
+<span class="fc" id="L18">    cacheOfOnlinePlayer = new HashMap&lt;String,Player&gt;();</span>
+<span class="fc" id="L19">  }</span>
+
+  @Override
+  public Player get(String sessionID) {
+<span class="fc" id="L23">    Player p = cacheOfOnlinePlayer.get(sessionID);</span>
+<span class="fc" id="L24">    return p;</span>
+  }
+
+  @Override
+  public void add(String sessionID, Player player) {
+<span class="fc" id="L29">    cacheOfOnlinePlayer.put(sessionID, player);</span>
+<span class="fc" id="L30">  }</span>
+
+  @Override
+  public void remove(String sessionID) {
+<span class="fc" id="L34">    cacheOfOnlinePlayer.remove(sessionID);</span>
+<span class="fc" id="L35">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201506030918</span></div></body></html>

@@ -1,0 +1,11 @@
+Testsuite: cloud.cave.config.TestFactoryDynamicCreation
+Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.069 sec
+
+Testcase: shouldIncreaseCoverage took 0.01 sec
+Testcase: shouldCreateProperSubscriptionInstances took 0.02 sec
+Testcase: shouldThrowExceptionForNonExistingCaveClass took 0.001 sec
+Testcase: shouldCreateProperReactorInstances took 0.021 sec
+Testcase: shouldCreateProperWeatherInstances took 0 sec
+Testcase: shouldCreateProperCaveInstances took 0 sec
+Testcase: shouldThrowExceptionIfEnvVarNotSet took 0 sec
+Testcase: shouldCreateProperClientRequestHandler took 0.003 sec

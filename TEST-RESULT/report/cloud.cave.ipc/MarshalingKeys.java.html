@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>MarshalingKeys.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=2;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Coverage of SkyCave</a> &gt; <a href="index.source.html" class="el_package">cloud.cave.ipc</a> &gt; <span class="el_source">MarshalingKeys.java</span></div><h1>MarshalingKeys.java</h1><pre class="source lang-java linenums">package cloud.cave.ipc;
+
+/**
+ * Requests and replies are marshaled into JSON which is basically an notation
+ * for lists of (key,value) pairs.
+ * &lt;p&gt;
+ * The constants below define the keys for the individual attributes.
+ * &lt;p&gt;
+ * Note: a convention is made for method name keys, namely that
+ * all method names first 5 characters identify the type/class of
+ * the owner object ('play-' = player; 'cave-' = cave), to
+ * allow easy lookup of the proper event handler (called Dispatcher here)
+ * by the Invoker. This is essentially an example of 'name mangling'.
+ * 
+ * @author Henrik Baerbak Christensen, Aarhus University
+ */
+<span class="nc" id="L17">public class MarshalingKeys {</span>
+
+  // Key of the version number of the marshalling
+<span class="fc" id="L20">  public static final Object VERSION_NO_KEY = &quot;version&quot;;</span>
+
+  // List of keys used in the JSON request/reply objects 
+  public static final String METHOD_KEY = &quot;method&quot;; 
+  public static final String PLAYER_ID_KEY = &quot;player-id&quot;; 
+  public static final String PLAYER_SESSION_ID_KEY = &quot;player-session-id&quot;; 
+  public static final String PARAMETER_HEAD_KEY = &quot;parameter&quot;;
+  public static final String PARAMETER_TAIL_KEY = &quot;parameter-tail&quot;;
+  
+  // the key for return values
+  public static final String RETURNVALUE_HEAD_KEY = &quot;reply&quot;;
+  public static final String RETURNVALUE_TAIL_KEY = &quot;reply-tail&quot;;
+  public static final String ERROR_CODE_KEY = &quot;error-code&quot;; 
+  public static final String ERROR_MSG_KEY = &quot;error-message&quot;;
+
+  // Prefixes of the types/classes that have methods associated
+  // Note that the Invoker depends upon these ending in a dash
+  // so do not change that.
+  public static final String CAVE_TYPE_PREFIX = &quot;cave-&quot;;
+  public static final String PLAYER_TYPE_PREFIX = &quot;player-&quot;;
+  
+  // List of player method keys
+  public static final String MOVE_METHOD_KEY = PLAYER_TYPE_PREFIX+&quot;move&quot;;
+  public static final String GET_SHORT_ROOM_DESCRIPTION_METHOD_KEY = PLAYER_TYPE_PREFIX+&quot;get-short-room-description&quot;;
+  public static final String GET_POSITION_METHOD_KEY = PLAYER_TYPE_PREFIX+&quot;get-position&quot;;
+  public static final String GET_LONG_ROOM_DESCRIPTION_METHOD_KEY = PLAYER_TYPE_PREFIX+&quot;get-long-room-description&quot;;
+  public static final String GET_REGION_METHOD_KEY = PLAYER_TYPE_PREFIX+&quot;get-region&quot;;
+  public static final String GET_PLAYERS_HERE_METHOD_KEY = PLAYER_TYPE_PREFIX+&quot;get-players-here&quot;;
+  public static final String GET_EXITSET_METHOD_KEY = PLAYER_TYPE_PREFIX+&quot;get-exit-set&quot;;
+  public static final String DIG_ROOM_METHOD_KEY = PLAYER_TYPE_PREFIX+&quot;dig-room&quot;;
+  public static final String EXECUTE_METHOD_KEY = PLAYER_TYPE_PREFIX+&quot;execute&quot;;
+
+  // List of cave method keys
+  public static final String LOGIN_METHOD_KEY = CAVE_TYPE_PREFIX+&quot;login&quot;;
+  public static final String LOGOUT_METHOD_KEY = CAVE_TYPE_PREFIX+&quot;logout&quot;;
+  public static final String DESCRIBE_CONFIGURATION_METHOD_KEY = CAVE_TYPE_PREFIX+&quot;describe-configuration&quot;;
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201506030918</span></div></body></html>

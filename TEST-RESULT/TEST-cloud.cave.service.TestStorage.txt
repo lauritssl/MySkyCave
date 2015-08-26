@@ -1,0 +1,8 @@
+Testsuite: cloud.cave.service.TestStorage
+Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.019 sec
+
+Testcase: shouldGetExitSet took 0.003 sec
+Testcase: shouldUpdatePlayerTables took 0.003 sec
+Testcase: shouldGetPlayerByID took 0 sec
+Testcase: shouldUpdateRoomTables took 0.002 sec
+Testcase: shouldUpdatePlayerAndPositionTables took 0.007 sec

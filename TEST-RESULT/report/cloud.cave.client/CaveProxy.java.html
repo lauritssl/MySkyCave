@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>CaveProxy.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=2;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Coverage of SkyCave</a> &gt; <a href="index.source.html" class="el_package">cloud.cave.client</a> &gt; <span class="el_source">CaveProxy.java</span></div><h1>CaveProxy.java</h1><pre class="source lang-java linenums">package cloud.cave.client;
+
+import cloud.cave.common.LoginRecord;
+import cloud.cave.domain.*;
+import cloud.cave.ipc.*;
+
+import org.json.simple.*;
+import org.slf4j.*;
+
+/** The Cave implementation on the client.
+ * &lt;p&gt;
+ * It is a Proxy pattern (Flexible, Reliable Software, p. 317), more
+ * specifically a remote proxy or 'client side proxy' 
+ * (Patterns-oriented Software Architecture, Vol 4, p. 240).
+ * &lt;p&gt; 
+ * All methods follow the same remote proxy template
+ * &lt;ol&gt;
+ * &lt;li&gt; Marshal this and parameters into a request object in JSON
+ * &lt;li&gt; Send it to server and await reply
+ * &lt;li&gt; Convert reply object back into return values
+ * &lt;/ol&gt;
+ * @author Henrik Baerbak Christensen, Aarhus University
+ *
+ */
+public class CaveProxy implements Cave {
+
+  private ClientRequestHandler crh;
+  private JSONObject requestJson;
+
+  private Logger logger; 
+
+  /** Create the cave proxy with the given request handler.
+   * 
+   * @param crh the request handler for IPC
+   */
+<span class="fc" id="L36">  public CaveProxy(ClientRequestHandler crh) {</span>
+<span class="fc" id="L37">    this.crh = crh;</span>
+<span class="fc" id="L38">    logger = LoggerFactory.getLogger(CaveProxy.class);</span>
+<span class="fc" id="L39">  }</span>
+
+  @Override
+  public Login login(String loginName, String password) {
+    // Build the json request object 
+<span class="fc" id="L44">    requestJson = </span>
+<span class="fc" id="L45">        Marshaling.createRequestObject(&quot;ignore-player-id&quot;, // No player id</span>
+            &quot;ignore-session-id&quot;,
+            MarshalingKeys.LOGIN_METHOD_KEY, 
+            loginName, password);
+
+<span class="fc" id="L50">    Login result = null;</span>
+
+    // send the request over the connector and retrieve the reply object 
+<span class="fc" id="L53">    JSONObject replyJson = requestAndAwaitReply(requestJson);</span>
+
+<span class="fc" id="L55">    String statusCode = replyJson.get(MarshalingKeys.ERROR_CODE_KEY).toString();</span>
+
+<span class="fc bfc" id="L57" title="All 4 branches covered.">    if (! statusCode.equals(StatusCode.OK)) {</span>
+<span class="fc" id="L58">      result = new LoginRecord(LoginResult.LOGIN_FAILED_SERVER_ERROR);</span>
+      // log the incident
+<span class="fc" id="L60">      String errorMsg = replyJson.get(MarshalingKeys.ERROR_MSG_KEY).toString();</span>
+<span class="fc" id="L61">      logger.error(&quot;Login of &quot;+loginName+&quot; failed due to &quot;+LoginResult.LOGIN_FAILED_SERVER_ERROR+&quot;. &quot;</span>
+          + &quot;Error msg from server: '&quot;+errorMsg+&quot;'.&quot;);
+<span class="fc" id="L63">    } else {</span>
+      // extract the reply and convert into client side objects; note
+      // that in case of unsuccessful login the return JSON has no tail part!
+<span class="fc" id="L66">      String loginResultAsString = replyJson.get(</span>
+<span class="fc" id="L67">          MarshalingKeys.RETURNVALUE_HEAD_KEY).toString();</span>
+<span class="fc" id="L68">      LoginResult loginResult = LoginResult.valueOf(loginResultAsString);</span>
+<span class="fc" id="L69">      boolean validLogin = LoginResult.isValidLogin(loginResult);</span>
+
+<span class="fc bfc" id="L71" title="All 4 branches covered.">      if (validLogin) {</span>
+<span class="fc" id="L72">        JSONArray returnValueArray = (JSONArray) replyJson</span>
+<span class="fc" id="L73">            .get(MarshalingKeys.RETURNVALUE_TAIL_KEY);</span>
+
+<span class="fc" id="L75">        String playerID = returnValueArray.get(0).toString();</span>
+<span class="fc" id="L76">        String playerName = returnValueArray.get(1).toString();</span>
+<span class="fc" id="L77">        String sessionId = returnValueArray.get(2).toString();</span>
+
+<span class="fc" id="L79">        Player player = new PlayerProxy(crh, playerID, playerName, sessionId);</span>
+<span class="fc" id="L80">        result = new LoginRecord(player, loginResult);</span>
+<span class="fc" id="L81">      } else {</span>
+<span class="fc" id="L82">        result = new LoginRecord(loginResult);</span>
+      }
+    }
+<span class="fc" id="L85">    return result;</span>
+  }
+
+  @Override
+  public LogoutResult logout(String playerID) {
+    // Build the json request object 
+<span class="fc" id="L91">    requestJson = Marshaling.createRequestObject(playerID,</span>
+        &quot;ignore-session-id&quot;, // No session id
+        MarshalingKeys.LOGOUT_METHOD_KEY, &quot;&quot;);
+<span class="fc" id="L94">    LogoutResult result = LogoutResult.PLAYER_NOT_IN_CAVE;</span>
+
+    // send the request over the connector and retrieve the reply object
+    JSONObject replyJson;
+<span class="fc" id="L98">    replyJson = requestAndAwaitReply(requestJson);</span>
+
+<span class="fc" id="L100">    String statusCode = replyJson.get(MarshalingKeys.ERROR_CODE_KEY).toString();</span>
+
+<span class="pc bpc" id="L102" title="2 of 4 branches missed.">    if (statusCode.equals(StatusCode.OK)) {</span>
+<span class="fc" id="L103">      String enumAsString = replyJson.get(MarshalingKeys.RETURNVALUE_HEAD_KEY)</span>
+<span class="fc" id="L104">          .toString();</span>
+<span class="fc" id="L105">      result = LogoutResult.valueOf(enumAsString);</span>
+<span class="fc" id="L106">    } else {</span>
+      // log the incident
+<span class="nc" id="L108">      String errorMsg = replyJson.get(MarshalingKeys.ERROR_MSG_KEY).toString();</span>
+<span class="nc" id="L109">      logger.error(&quot;Logout of &quot;+playerID+&quot; failed. &quot;</span>
+          + &quot;Error msg from server: '&quot;+errorMsg+&quot;'.&quot;);
+<span class="nc" id="L111">      result = LogoutResult.SERVER_FAILURE;</span>
+    }
+<span class="fc" id="L113">    return result;</span>
+  }
+
+  private JSONObject requestAndAwaitReply(JSONObject requestJson) {
+<span class="fc" id="L117">    return ClientCommon.requestAndAwaitReply(crh, requestJson);</span>
+  }
+  
+  public String toString() {
+<span class="nc" id="L121">    return describeConfiguration();</span>
+  }
+
+  @Override
+  public String describeConfiguration() {
+<span class="fc" id="L126">    String cfg = &quot;CaveProxy configuration:\n&quot;;</span>
+<span class="fc" id="L127">    cfg += &quot;  ClientRequestHandler: &quot;+ crh.getClass().getName()+&quot; / cfg: &quot;+crh.toString() + &quot;\n&quot;;</span>
+
+    // Build the json request object 
+<span class="fc" id="L130">    requestJson = </span>
+<span class="fc" id="L131">        Marshaling.createRequestObject(&quot;&quot;, // no player id </span>
+            &quot;none&quot;, // no session id
+            MarshalingKeys.DESCRIBE_CONFIGURATION_METHOD_KEY,&quot;&quot;);
+
+    // send the request over the connector and retrieve the reply object 
+<span class="fc" id="L136">    JSONObject replyJson = requestAndAwaitReply(requestJson);</span>
+
+<span class="fc" id="L138">    String statusCode = replyJson.get(MarshalingKeys.ERROR_CODE_KEY).toString();</span>
+
+<span class="pc bpc" id="L140" title="2 of 4 branches missed.">    if (! statusCode.equals(StatusCode.OK)) {</span>
+<span class="nc" id="L141">      cfg += &quot; Server side configuration not available.&quot;;</span>
+    } else {
+<span class="fc" id="L143">      cfg += replyJson.get(MarshalingKeys.RETURNVALUE_HEAD_KEY).toString();</span>
+    }
+    
+<span class="fc" id="L146">    return cfg;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201506030918</span></div></body></html>

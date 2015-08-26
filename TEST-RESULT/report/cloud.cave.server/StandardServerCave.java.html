@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>StandardServerCave.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=2;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Coverage of SkyCave</a> &gt; <a href="index.source.html" class="el_package">cloud.cave.server</a> &gt; <span class="el_source">StandardServerCave.java</span></div><h1>StandardServerCave.java</h1><pre class="source lang-java linenums">package cloud.cave.server;
+
+import java.util.UUID;
+
+import org.slf4j.*;
+
+import cloud.cave.common.*;
+import cloud.cave.config.CaveServerFactory;
+import cloud.cave.domain.*;
+import cloud.cave.ipc.CaveIPCException;
+import cloud.cave.server.common.*;
+import cloud.cave.service.*;
+
+/**
+ * The standard server side implementation of the Cave. Just as the server side
+ * player, this implementation communicates directly with the storage layer to
+ * achieve it behavior.
+ * 
+ * @author Henrik Baerbak Christensen, Aarhus University.
+ * 
+ */
+public class StandardServerCave implements Cave {
+
+  private CaveStorage storage;
+  private SubscriptionService subscriptionService;
+  private WeatherService weatherService;
+  private PlayerSessionCache sessionCache;
+
+  private Logger logger;
+
+<span class="fc" id="L31">  public StandardServerCave(CaveServerFactory factory) {</span>
+<span class="fc" id="L32">    storage = factory.createCaveStorage();</span>
+    
+<span class="fc" id="L34">    subscriptionService = factory</span>
+<span class="fc" id="L35">        .createSubscriptionServiceConnector();</span>
+
+<span class="fc" id="L37">    weatherService = factory.createWeatherServiceConnector();</span>
+    
+    // TODO Currently the session cache strategy is not injected
+<span class="fc" id="L40">    sessionCache = new SimpleInMemoryCache();</span>
+    
+<span class="fc" id="L42">    logger = LoggerFactory.getLogger(StandardServerCave.class);</span>
+<span class="fc" id="L43">  }</span>
+
+  /**
+   * Given a loginName and password (like '201017201','123') contact the
+   * subscription storage to validate that the player is registered. If valid,
+   * create the player avatar. Return the result of the login
+   * 
+   * @param loginName
+   *          the loginName which the player uses to identify his/her account in
+   *          the cave
+   * @param password
+   *          the password associated with the account
+   * @return the result of the login
+   */
+  @Override
+  public Login login(String loginName, String password) {
+<span class="fc" id="L59">    Login result = null;</span>
+
+    // Fetch the subscription for the given loginName
+<span class="fc" id="L62">    SubscriptionRecord subscription = null;</span>
+<span class="fc" id="L63">    String errorMsg = null;</span>
+    try {
+<span class="fc" id="L65">      subscription = subscriptionService.lookup(loginName, password);</span>
+<span class="fc" id="L66">    } catch (CaveIPCException e) {</span>
+<span class="fc" id="L67">      errorMsg=&quot;Lookup failed on subscription service due to IPC exception:&quot;+e.getMessage();</span>
+<span class="fc" id="L68">      logger.error(errorMsg);</span>
+<span class="fc" id="L69">    }</span>
+    
+<span class="fc bfc" id="L71" title="All 4 branches covered.">    if (subscription==null) {</span>
+<span class="fc" id="L72">      return new LoginRecord(LoginResult.LOGIN_FAILED_SERVER_ERROR);</span>
+    }
+    // Check all the error conditions and 'fail fast' on them...
+<span class="fc bfc" id="L75" title="All 4 branches covered.">    if (subscription.getErrorCode() == SubscriptionResult.LOGIN_NAME_OR_PASSWORD_IS_UNKNOWN) {</span>
+<span class="fc" id="L76">      return new LoginRecord(LoginResult.LOGIN_FAILED_UNKNOWN_SUBSCRIPTION);</span>
+    }
+    
+    // Now the subscription is assumed to be a valid player
+<span class="fc" id="L80">    String playerID = subscription.getPlayerID();</span>
+    
+    // Create id of session as a random UUID
+<span class="fc" id="L83">    String sessionID = UUID.randomUUID().toString();</span>
+    
+    // Enter the player, creating the player's session in the cave
+    // (which may overwrite an already ongoing session which is then
+    // implicitly invalidated).
+<span class="fc" id="L88">    LoginResult theResult = startPlayerSession(subscription, sessionID);</span>
+
+<span class="fc" id="L90">    boolean validLogin = LoginResult.isValidLogin(theResult);</span>
+<span class="pc bpc" id="L91" title="2 of 4 branches missed.">    if ( ! validLogin ) {</span>
+<span class="nc" id="L92">      return new LoginRecord(theResult);</span>
+    }
+
+    // Create player domain object
+<span class="fc" id="L96">    Player player = new StandardServerPlayer(playerID, storage, weatherService, sessionCache);</span>
+    
+    // Cache the player session for faster lookups
+<span class="fc" id="L99">    sessionCache.add(playerID, player);</span>
+    
+    // And finalize the login result
+<span class="fc" id="L102">    result = new LoginRecord(player, theResult);</span>
+
+<span class="fc" id="L104">    return result;</span>
+  }
+
+  /** Initialize a player session by updating/preparing the storage system
+   * and potentially clear the cache of previous sessions.
+   * @param subscription the record of the subscription to start a session on
+   * @param sessionID ID of the session assigned to this login
+   * @return result of the login which is always a valid login, but
+   * may signal a 'second login' that overrules a previous one.
+   */
+  private LoginResult startPlayerSession(SubscriptionRecord subscription,
+      String sessionID) {
+<span class="fc" id="L116">    LoginResult result = LoginResult.LOGIN_SUCCESS; // Assume success</span>
+    
+    // get the record of the player from storage
+<span class="fc" id="L119">    PlayerRecord playerRecord = storage.getPlayerByID(subscription.getPlayerID());</span>
+    
+<span class="fc bfc" id="L121" title="All 4 branches covered.">    if (playerRecord == null) {</span>
+      // Apparently a newly registered player, so create the record
+      // and add it to the cave storage
+<span class="fc" id="L124">      String position = new Point3(0, 0, 0).getPositionString();</span>
+<span class="fc" id="L125">      playerRecord = new PlayerRecord(subscription, position, sessionID);</span>
+<span class="fc" id="L126">      storage.updatePlayerRecord(playerRecord);</span>
+<span class="fc" id="L127">    } else {</span>
+      // Player has been seen before; if he/she has an existing
+      // session (&quot;= is in cave&quot;) we flag this as a warning,
+      // and clear the cache entry
+<span class="fc bfc" id="L131" title="All 4 branches covered.">      if (playerRecord.isInCave()) {</span>
+<span class="fc" id="L132">        result = LoginResult.LOGIN_SUCCESS_PLAYER_ALREADY_LOGGED_IN;</span>
+      }
+      // update the session id in the storage system
+<span class="fc" id="L135">      playerRecord.setSessionId(sessionID);</span>
+<span class="fc" id="L136">      storage.updatePlayerRecord(playerRecord);</span>
+    }
+
+<span class="fc" id="L139">    return result;</span>
+  }
+
+  @Override
+  public LogoutResult logout(String playerID) {
+    // ensure that the player is known by and in the cave
+<span class="fc" id="L145">    PlayerRecord player = storage.getPlayerByID(playerID);</span>
+    
+<span class="fc bfc" id="L147" title="All 4 branches covered.">    if (!player.isInCave()) {</span>
+<span class="fc" id="L148">      return LogoutResult.PLAYER_NOT_IN_CAVE;</span>
+    }
+
+    // reset the session  to indicate the player is no longer around
+<span class="fc" id="L152">    player.setSessionId(null);</span>
+
+    // and update the record in the storage
+<span class="fc" id="L155">    storage.updatePlayerRecord(player);</span>
+    
+    // and clean up the cache
+<span class="fc" id="L158">    sessionCache.remove(playerID);</span>
+    
+<span class="fc" id="L160">    return LogoutResult.SUCCESS;</span>
+  }
+
+  @Override
+  public String describeConfiguration() {
+<span class="fc" id="L165">    String cfg = &quot;StandardServerCave configuration:\n&quot;;</span>
+<span class="fc" id="L166">    cfg += &quot;  CaveStorage: &quot;+ storage.getClass().getName()+&quot; / cfg: &quot;+storage.getConfiguration() + &quot;\n&quot;;</span>
+<span class="fc" id="L167">    cfg += &quot;  SubscriptionService: &quot;+ subscriptionService.getClass().getName()+&quot; / cfg: &quot;+subscriptionService.getConfiguration() + &quot;\n&quot;;</span>
+<span class="fc" id="L168">    cfg += &quot;  WeatherService: &quot;+ weatherService.getClass().getName()+&quot; / cfg: &quot;+weatherService.getConfiguration() + &quot;\n&quot;;</span>
+<span class="fc" id="L169">    return cfg;</span>
+  }
+
+  public PlayerSessionCache getCache() {
+<span class="fc" id="L173">   return sessionCache;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201506030918</span></div></body></html>

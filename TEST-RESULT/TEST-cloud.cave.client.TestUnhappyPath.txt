@@ -1,0 +1,5 @@
+Testsuite: cloud.cave.client.TestUnhappyPath
+Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.042 sec
+
+Testcase: shouldThrowIPCExceptionForTimeOut took 0.023 sec
+Testcase: shouldReportOnTimeoutErrorOnSubscriptionService took 0.017 sec

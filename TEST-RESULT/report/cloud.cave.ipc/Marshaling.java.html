@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>Marshaling.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=2;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Coverage of SkyCave</a> &gt; <a href="index.source.html" class="el_package">cloud.cave.ipc</a> &gt; <span class="el_source">Marshaling.java</span></div><h1>Marshaling.java</h1><pre class="source lang-java linenums">package cloud.cave.ipc;
+
+import org.json.simple.*;
+
+/**
+ * A very simple marshaling technique: a small collection of static functions
+ * provides the ability to create JSON request- and reply objects.
+ * &lt;p&gt;
+ * The format allows unlimited parameters of any type as well as unlimited
+ * return values of any type.
+ * &lt;p&gt;
+ * As the by far mostly used type of method call to be marshaled has three
+ * parameters (playerId, session id, and a parameter) and has a single valued
+ * return type (a return value) convenience methods handle these cases.
+ * &lt;p&gt;
+ * For multi parameter method calls and multi valued returns, arrays are used.
+ * &lt;p&gt;
+ * The convention is used that the 1 parameter/return value is denoted HEAD and
+ * the array of the rest denoted TAIL (i.e. the LISP convention, if anyone are
+ * old enough to remember that.)
+ * &lt;p&gt;
+ * Also the convention is used that everything is STRINGS! Thus when
+ * interpreting any value, take care to make the proper conversion.
+ * &lt;p&gt;
+ * And beware of the ordering of arguments - as everything are strings
+ * accidentally reversing the playerID and sessionID in the call
+ * leads to nasty defects. 
+ * 
+ * @author Henrik Baerbak Christensen, Aarhus University
+ * 
+ */
+<span class="fc" id="L32">public class Marshaling {</span>
+  
+  /** Version of the current marshaling */
+  public static final String MARSHALING_VERSION = &quot;2&quot;;
+  
+  @SuppressWarnings(&quot;unchecked&quot;) 
+  /** Create a simple request object having one parameter
+   * for a given player and given method
+   * @param playerID id of the player
+   * @param sessionID id of the session the player is logged in
+   * @param commandKey key of method to call 
+   * @param parameter the single parameter provided
+   * @return JSON object that contains the marshaled
+   * object representing this method call.
+   */
+  public static JSONObject createRequestObject(String playerID,
+      String sessionID, String commandKey, String parameter1) {
+<span class="fc" id="L49">    JSONObject requestJson = new JSONObject();</span>
+
+<span class="fc" id="L51">    requestJson.put(MarshalingKeys.PLAYER_ID_KEY, playerID);</span>
+<span class="fc" id="L52">    requestJson.put(MarshalingKeys.PLAYER_SESSION_ID_KEY, sessionID);</span>
+<span class="fc" id="L53">    requestJson.put(MarshalingKeys.VERSION_NO_KEY, MARSHALING_VERSION);</span>
+<span class="fc" id="L54">    requestJson.put(MarshalingKeys.METHOD_KEY, commandKey);</span>
+<span class="fc" id="L55">    requestJson.put(MarshalingKeys.PARAMETER_HEAD_KEY, parameter1);</span>
+
+<span class="fc" id="L57">    return requestJson;</span>
+  }
+  
+  @SuppressWarnings(&quot;unchecked&quot;)
+  /** Create a complex request object having several parameters
+   * for a given player and given method
+   * @param playerID id of the player
+   * @param commandKey key of method to call 
+   * @param parameter the first parameter provided
+   * @param parametArray the rest of the parameters
+   * @return JSON object that contains the marshaled
+   * object representing this method call.
+   */
+  public static JSONObject createRequestObject(String playerID,
+      String sessionID,
+      String methodKey, String parameter1, String... parameterArray) {
+<span class="fc" id="L73">    JSONObject request = createRequestObject(playerID, sessionID, methodKey, parameter1);</span>
+    // and add the rest of the parameters
+<span class="fc" id="L75">    JSONArray array = new JSONArray();</span>
+<span class="fc bfc" id="L76" title="All 4 branches covered.">    for (String parameter : parameterArray) {</span>
+<span class="fc" id="L77">      array.add(parameter.toString());</span>
+    }
+<span class="fc" id="L79">    request.put(MarshalingKeys.PARAMETER_TAIL_KEY, array);</span>
+<span class="fc" id="L80">    return request;</span>
+  } 
+
+  
+  @SuppressWarnings(&quot;unchecked&quot;) 
+  /** Create a simple reply JSON object that represents a
+   * successful operation with a single return value. Typically
+   * it represents the return value of a method invocation.
+   * Use an empty string for a void method.
+   * 
+   * @param returnValue the value to return
+   * @return a valid reply JSON object following the marshaling
+   * conventions.
+   */
+  public static JSONObject createValidReplyWithReturnValue(String returnValue) { 
+<span class="fc" id="L95">    JSONObject reply = new JSONObject(); </span>
+<span class="fc" id="L96">    reply.put(MarshalingKeys.ERROR_CODE_KEY, StatusCode.OK); </span>
+<span class="fc" id="L97">    reply.put(MarshalingKeys.ERROR_MSG_KEY, &quot;OK&quot;); </span>
+<span class="fc" id="L98">    reply.put(MarshalingKeys.RETURNVALUE_HEAD_KEY, returnValue); </span>
+<span class="fc" id="L99">    reply.put(MarshalingKeys.VERSION_NO_KEY, MARSHALING_VERSION); </span>
+<span class="fc" id="L100">    return reply; </span>
+  } 
+
+  @SuppressWarnings(&quot;unchecked&quot;)
+  /** Create a complex reply JSON object that represents a
+   * successful operation with multiple return values. 
+   * 
+   * @param returnValue the value to return
+   * @return a valid reply JSON object following the marshaling
+   * conventions.
+   */
+  public static JSONObject createValidReplyWithReturnValue(String returnValue,
+      String... returnValueArray) {
+<span class="fc" id="L113">    JSONObject reply = createValidReplyWithReturnValue(returnValue);</span>
+    // and add the rest of the return values
+<span class="fc" id="L115">    JSONArray array = new JSONArray();</span>
+<span class="fc bfc" id="L116" title="All 4 branches covered.">    for (String returnvalue : returnValueArray) {</span>
+<span class="fc" id="L117">      array.add(returnvalue);</span>
+    }
+<span class="fc" id="L119">    reply.put(MarshalingKeys.RETURNVALUE_TAIL_KEY, array);</span>
+<span class="fc" id="L120">    return reply;</span>
+  }
+ 
+  @SuppressWarnings(&quot;unchecked&quot;)
+  /** Create a reply JSON object that represents the result of
+   * an operation that failed for some reason, for instance
+   * a method that threw an exception, a time out, a
+   * denial of service due to overload, or similar.
+   * 
+   * @param statusCode the code for the status, see the
+   * valid ones in StatusCode
+   * @param errorMsg a further description of the error as
+   * a human readable and sufficiently self contained message
+   * to aid debugging 
+   * @return the reply object that represents the failed operation
+   */
+  public static JSONObject createInvalidReplyWithExplantion(String statusCode,
+      String errorMsg) {
+<span class="fc" id="L138">    JSONObject reply = new JSONObject();</span>
+<span class="fc" id="L139">    reply.put(MarshalingKeys.ERROR_CODE_KEY, statusCode);</span>
+<span class="fc" id="L140">    reply.put(MarshalingKeys.ERROR_MSG_KEY, errorMsg);</span>
+<span class="fc" id="L141">    reply.put(MarshalingKeys.VERSION_NO_KEY, MARSHALING_VERSION); </span>
+<span class="fc" id="L142">    return reply;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201506030918</span></div></body></html>

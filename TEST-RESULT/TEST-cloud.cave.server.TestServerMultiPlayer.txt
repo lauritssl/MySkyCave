@@ -1,0 +1,8 @@
+Testsuite: cloud.cave.server.TestServerMultiPlayer
+Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.089 sec
+
+Testcase: shouldProvideBothPlayersInLongDescription took 0.016 sec
+Testcase: shouldSeePlayersInRoom took 0.019 sec
+Testcase: shouldSeeOtherPlayersInSameLocation took 0.015 sec
+Testcase: shouldAllowIndependentMoves took 0.017 sec
+Testcase: shouldSeeLongDescriptionUpdateWhenOtherPlayerLogOut took 0.018 sec

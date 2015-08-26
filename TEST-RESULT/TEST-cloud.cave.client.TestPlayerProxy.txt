@@ -1,0 +1,19 @@
+Testsuite: cloud.cave.client.TestPlayerProxy
+Tests run: 16, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.255 sec
+
+Testcase: shouldValidateToString took 0.013 sec
+Testcase: shouldReplyWithErrorInCaseRequestIsMalformed took 0.015 sec
+Testcase: shouldGetPosition took 0.015 sec
+Testcase: shouldPreventCallsFromDualLogins took 0.021 sec
+Testcase: shouldSeePlayersInRoom took 0.023 sec
+Testcase: shouldShowExitsForPlayersPosition took 0.019 sec
+Testcase: shouldNotAllowDigAtEast took 0.013 sec
+Testcase: shouldAllowPlayerToDigNewRooms took 0.013 sec
+Testcase: shouldGetShortRoomDescription took 0.012 sec
+Testcase: shouldHaveSessionIdAssigned took 0.012 sec
+Testcase: shouldShowValidExitsFromEntryRoom took 0.013 sec
+Testcase: shouldProvideLongDescription took 0.015 sec
+Testcase: shouldBeAtPositionOfLastLogout took 0.017 sec
+Testcase: shouldAllowMovingEast took 0.012 sec
+Testcase: shouldAccessSimpleAttributes took 0.012 sec
+Testcase: shouldHandleRemoteMoveAndDescription took 0.016 sec
