@@ -141,10 +141,12 @@ public class CmdInterpreter {
       systemOut.println(weather);
 
     } else if (command.equals("post") && tokens.length > 1) {
-      systemOut.println("POST awaits implementation");
+      String message = mergeTokens(tokens, 1);
+      player.addMessage(message);
+      systemOut.println("You have written a message on the wall: " + message);
 
     } else if (command.equals("read")) {
-      systemOut.println("READ awaits implementation");
+      systemOut.println(player.getMessageList());
 
     } else if (command.equals("sys")) {
       systemOut.println("System information:");
