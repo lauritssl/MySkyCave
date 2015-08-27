@@ -311,7 +311,7 @@ SkyCave starter kit for the "Cloud Computing and Architecture" course.
     <echo message="*** Creating 'review.zip' for evaluator review ***"/>
     <zip destfile="review.zip"
 	 basedir="."
-	 includes="build.xml, ivy.xml, *.sh, src/, test/, TEST-RESULT/*, resource/, lib-core/" />
+	 includes="build.xml, ivy.xml, *.sh, src/, test/, TEST-RESULT/**, resource/, lib-core/" />
 
   </target>
 
