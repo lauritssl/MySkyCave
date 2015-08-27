@@ -1,6 +1,7 @@
 package cloud.cave.client;
 
 import java.io.*;
+import java.util.List;
 
 import org.json.simple.JSONObject;
 
@@ -143,10 +144,13 @@ public class CmdInterpreter {
     } else if (command.equals("post") && tokens.length > 1) {
       String message = mergeTokens(tokens, 1);
       player.addMessage(message);
-      systemOut.println("You have written a message on the wall: " + message);
+      systemOut.println("You have posted:" + message);
 
     } else if (command.equals("read")) {
-      systemOut.println(player.getMessageList());
+      List<String> messageList = player.getMessageList();
+      for (String m : messageList) {
+        systemOut.println(m);
+      }
 
     } else if (command.equals("sys")) {
       systemOut.println("System information:");

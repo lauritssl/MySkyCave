@@ -40,4 +40,11 @@ public class TestWall {
     assertThat( wallContents.get(0), containsString(message));
   }
 
+  @Test
+  public void shouldShowPlayernameOnWall() {
+    player.addMessage("Test");
+    List<String> wallContents = player.getMessageList();
+    assertThat( wallContents.get(0), containsString("[" + player.getName() + "]"));
+  }
+
 }

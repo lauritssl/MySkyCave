@@ -128,7 +128,7 @@ public class StandardServerPlayer implements Player {
 
   @Override
   public void addMessage(String message) {
-    storage.addMessage(getPosition(), message);
+    storage.addMessage(getPosition(), "[" + getName() + "] " + message);
   }
 
   @Override
