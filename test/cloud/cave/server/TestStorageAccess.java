@@ -69,6 +69,28 @@ public class TestStorageAccess {
     assertEquals(LogoutResult.SUCCESS, result);
   }
 
+  @Test
+  public void shouldBeAbleToAddMessage() {
+    String message = "Test";
+    spy.addMessage(new Point3(0, 0, 0).getPositionString(), message);
+    assertEquals(spy.getMessageList(new Point3(0, 0, 0).getPositionString()).get(0), message);
+  }
+
+  @Test
+  public void shouldBeAbleToAddTwoMessagesToSameRoom() {
+    String msg1 = "Test1";
+    String msg2 = "Test2";
+    spy.addMessage(new Point3(0, 0, 0).getPositionString(), msg1);
+    spy.addMessage(new Point3(0, 0, 0).getPositionString(), msg2);
+    assertEquals(spy.getMessageList(new Point3(0, 0, 0).getPositionString()).get(0), msg1);
+    assertEquals(spy.getMessageList(new Point3(0, 0, 0).getPositionString()).get(1), msg2);
+  }
+
+  @Test
+  public void shouldReturnEmptyListIfNoMessages(){
+    assertThat(spy.getMessageList(new Point3(0, 0, 0).getPositionString()).size(), is(0));
+  }
+
 }
 
 
@@ -94,6 +116,16 @@ class SpyCaveStorage implements CaveStorage {
 
   public boolean addRoom(String positionString, RoomRecord description) {
     return decoratee.addRoom(positionString, description);
+  }
+
+  @Override
+  public void addMessage(String positionString, String message) {
+    decoratee.addMessage(positionString, message);
+  }
+
+  @Override
+  public List<String> getMessageList(String positionString) {
+    return decoratee.getMessageList(positionString);
   }
 
 
