@@ -44,7 +44,7 @@ public class TestWallClient {
     
     // Create the cave proxy, and login mikkel
     caveProxy = new CaveProxy(crh);
-    Login loginResult = caveProxy.login( "mikkel_aarskort", "123");
+    Login loginResult = caveProxy.login("mikkel_aarskort", "123");
     
     player = (PlayerProxy) loginResult.getPlayer();
 
@@ -52,10 +52,11 @@ public class TestWallClient {
 
   @Test
   public void shouldWriteToAndReadWall() {
-    player.addMessage("This is message no. 1");
+    String message = "This is message no. 1";
+    player.addMessage(message);
     List<String> wallContents = player.getMessageList();
     assertThat( wallContents.size(), is(1));
-    assertThat( wallContents.get(0), containsString("NOT IMPLEMENTED YET"));
+    assertThat( wallContents.get(0), containsString(message));
   }
 
 }

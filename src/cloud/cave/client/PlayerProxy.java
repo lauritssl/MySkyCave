@@ -167,14 +167,22 @@ public class PlayerProxy implements Player {
 
   @Override
   public void addMessage(String message) {
-    // TODO Empty stub, to be implemented by students
+    JSONObject requestJson = createRequestObject(MarshalingKeys.ADD_MESSAGE_METHOD_KEY, message);
+    requestAndAwaitReply(requestJson);
   }
 
   @Override
   public List<String> getMessageList() {
-    // TODO Empty stub, to be implemented by students
+    JSONObject requestJson = createRequestObject(MarshalingKeys.GET_MESSAGE_LIST_METHOD_KEY, "");
+    JSONObject replyJson = requestAndAwaitReply(requestJson);
+
     List<String> contents = new ArrayList<String>();
-    contents.add("NOT IMPLEMENTED YET");
+    JSONArray array = (JSONArray) replyJson.get(MarshalingKeys.RETURNVALUE_TAIL_KEY);
+    // Convert it into a string list
+    for ( Object item : array ) {
+      contents.add(item.toString());
+    }
+
     return contents;
   }
 

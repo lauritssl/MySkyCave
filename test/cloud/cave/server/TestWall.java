@@ -32,13 +32,12 @@ public class TestWall {
 
   @Test
   public void shouldWriteToAndReadWall() {
-    player.addMessage("This is message no. 1");
+    String message = "This is message no. 1";
+    player.addMessage(message);
     List<String> wallContents = player.getMessageList();
-    
-    // TODO: Exercise - solve the 'wall' exercise
 
     assertThat( wallContents.size(), is(1));
-    assertThat( wallContents.get(0), containsString("NOT IMPLEMENTED YET"));
+    assertThat( wallContents.get(0), containsString(message));
   }
 
 }

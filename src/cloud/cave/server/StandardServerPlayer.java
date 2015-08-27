@@ -128,14 +128,12 @@ public class StandardServerPlayer implements Player {
 
   @Override
   public void addMessage(String message) {
-    // TODO Empty stub, to be implemented by students
+    storage.addMessage(getPosition(), message);
   }
 
   @Override
   public List<String> getMessageList() {
-    // TODO Empty stub, to be implemented by students
-    List<String> contents = new ArrayList<String>();
-    contents.add("NOT IMPLEMENTED YET");
+    List<String> contents = storage.getMessageList(getPosition());
     return contents;
   }
 
