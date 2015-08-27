@@ -104,7 +104,7 @@ public class TestInterpreter {
     
     // post and read
     assertThat(output, containsString("You have posted: A message"));
-    assertThat(output, containsString("[Magnus]  A message"));
+    assertThat(output, containsString("[Magnus] A message"));
     
     // exec
     assertThat(output, containsString("You executed command:HomeCommand"));
