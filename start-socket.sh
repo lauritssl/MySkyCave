@@ -1,3 +1,3 @@
 cd /root/cave
-source setupLocalSocket.sh
+source /root/cave/setupLocalSocket.sh
 ant daemon
