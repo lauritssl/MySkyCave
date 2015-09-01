@@ -3,6 +3,7 @@ package cloud.cave.client;
 import java.io.*;
 import java.util.List;
 
+import cloud.cave.ipc.CaveIPCException;
 import org.json.simple.JSONObject;
 
 import cloud.cave.common.PlayerSessionExpiredException;
@@ -110,6 +111,8 @@ public class CmdInterpreter {
       systemOut
           .println("**** You have been logged out.                                 ***");
       System.exit(0);
+    } catch (CaveIPCException e){
+      systemOut.println("*** Sorry - I cannot do that as I am disconnected from the cave, please quit ***");
     } catch (IOException e) {
       systemOut.println("Exception caught: " + e);
     }
