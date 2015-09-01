@@ -89,8 +89,6 @@ public class TestAppserverDisconnect {
 
     String output = baos.toString();
 
-    System.out.println(output);
-
     assertThat(output, containsString("*** Sorry - I cannot do that as I am disconnected from the cave, please quit ***"));
   }
 
