@@ -9,15 +9,18 @@ public class SaboteurCRHDecorator implements ClientRequestHandler {
 
   private ClientRequestHandler decoratee;
   private String exceptionMsg;
+  private int count;
   
   public SaboteurCRHDecorator(ClientRequestHandler decoratee) {
     this.decoratee = decoratee;
     exceptionMsg = null;
+    count = 0;
   }
   
   public JSONObject sendRequestAndBlockUntilReply(JSONObject requestJson)
       throws CaveIPCException {
-    if ( exceptionMsg != null ) { throw new CaveIPCException(exceptionMsg, null); }
+    count ++;
+    if ( exceptionMsg != null  || count == 3) { throw new CaveIPCException(exceptionMsg, null); }
     return decoratee.sendRequestAndBlockUntilReply(requestJson);
   }
 
