@@ -40,15 +40,22 @@ public class SocketClientRequestHandler implements ClientRequestHandler {
 
     Socket clientSocket = null;
     // Create the socket to the host
-    try {
-      clientSocket = new Socket(hostName, portNumber);
-      out = new PrintWriter(clientSocket.getOutputStream(), true);
-      in = new BufferedReader(new InputStreamReader(
-          clientSocket.getInputStream()));
-    } catch (UnknownHostException e) {
-      e.printStackTrace();
-    } catch (IOException e) {
-      e.printStackTrace();
+    while (true) {
+      try {
+        clientSocket = new Socket(hostName, portNumber);
+        out = new PrintWriter(clientSocket.getOutputStream(), true);
+        in = new BufferedReader(new InputStreamReader(
+                clientSocket.getInputStream()));
+        if (clientSocket != null) {
+          break;
+        }
+      } catch (UnknownHostException e) {
+        e.printStackTrace();
+      } catch (ConnectException e) {
+        System.out.println("*** Sorry - I cannot do that as I am disconnected from the cave, please quit ***");
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
     }
 
     // Send the JSON request as a string to the app server
@@ -63,7 +70,7 @@ public class SocketClientRequestHandler implements ClientRequestHandler {
 
       JSONParser parser = new JSONParser();
       replyJson = (JSONObject) parser.parse(reply);
-    } catch (IOException e) {
+    }  catch (IOException e) {
       e.printStackTrace();
     } catch (ParseException e) {
       e.printStackTrace();
