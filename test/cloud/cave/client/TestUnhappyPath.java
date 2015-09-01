@@ -14,6 +14,7 @@ import cloud.cave.ipc.*;
 import cloud.cave.server.*;
 import cloud.cave.server.common.*;
 import cloud.cave.service.*;
+import org.junit.rules.ExpectedException;
 
 /**
  * Testing unhappy paths, ie. scenarios where there are network problems.
@@ -24,6 +25,9 @@ public class TestUnhappyPath {
 
   private Cave cave;
   private SaboteurCRHDecorator saboteur;
+
+  @Rule
+  public ExpectedException thrown = ExpectedException.none();
 
   @Before
   public void setup() {
@@ -44,7 +48,8 @@ public class TestUnhappyPath {
   public void shouldThrowIPCExceptionForTimeOut() {
     // Tell the saboteur to throw exception
     saboteur.throwNextTime("Could Not Connect to server");
-    
+
+    thrown.expect(CaveIPCException.class);
     // One player
     @SuppressWarnings("unused")
     Login loginResult = cave.login( "mikkel_aarskort", "123");
