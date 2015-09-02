@@ -43,6 +43,8 @@ public class StandardWeatherService implements WeatherService {
                     .routeParam("region", regionStr)
                     .asString();
 
+            //Needed as Unirest gives us an org.json.JSONObject and we are working with an org.json.simple.JSONObject
+            //Workaround: parse the response as a string to a simple JSON object that we can return
             JSONParser parser = new JSONParser();
             JSONObject result = (JSONObject) parser.parse(response.getBody());
 
