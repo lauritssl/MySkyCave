@@ -3,7 +3,6 @@ package cloud.cave.service;
 import cloud.cave.domain.Region;
 import cloud.cave.server.common.ServerConfiguration;
 import com.mashape.unirest.http.HttpResponse;
-import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import org.json.simple.JSONObject;
@@ -11,7 +10,7 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 /**
- * Created by lalan on 02/09/15.
+ * Created by Soren Lundtoft and Laurits Langberg on 02/09/15.
  */
 public class StandardWeatherService implements WeatherService {
 
@@ -19,12 +18,29 @@ public class StandardWeatherService implements WeatherService {
 
     @Override
     public JSONObject requestWeather(String groupName, String playerID, Region region) {
+
+        //Switch case to account for different spelling on weather server
+        String regionStr;
+        switch (region){
+            case AALBORG:
+                regionStr = "Aalborg";
+                break;
+            case ODENSE:
+                regionStr = "Odense";
+                break;
+            case COPENHAGEN:
+                regionStr = "Copenhagen";
+                break;
+            default:
+                regionStr = "Arhus";
+        }
+
         try {
 
             HttpResponse<String> response = Unirest.get("http://" + configuration.get(0) + "/cave/weather/api/v1/{groupName}/{playerID}/{region}")
                     .routeParam("groupName", groupName)
                     .routeParam("playerID", playerID)
-                    .routeParam("region", "Arhus")
+                    .routeParam("region", regionStr)
                     .asString();
 
             JSONParser parser = new JSONParser();
