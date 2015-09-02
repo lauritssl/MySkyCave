@@ -10,8 +10,8 @@ export SKYCAVE_APPSERVER=46.101.43.174:37123
 # === Inject test doubles for all delegates (Note IP endpoints are dummies)
 
 # = Subscription service 
-export SKYCAVE_SUBSCRIPTION_IMPLEMENTATION=cloud.cave.doubles.TestStubSubscriptionService
-export SKYCAVE_SUBSCRIPTIONSERVER=46.101.43.174:42042
+export SKYCAVE_SUBSCRIPTION_IMPLEMENTATION=cloud.cave.service.StandardSubscriptionService
+export SKYCAVE_SUBSCRIPTIONSERVER=cavereg.baerbak.com:4567
 
 # = Cave storage
 export SKYCAVE_CAVESTORAGE_IMPLEMENTATION=cloud.cave.doubles.FakeCaveStorage
