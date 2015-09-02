@@ -7,6 +7,8 @@ import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 /**
  * Created by lalan on 02/09/15.
@@ -19,17 +21,20 @@ public class StandardWeatherService implements WeatherService {
     public JSONObject requestWeather(String groupName, String playerID, Region region) {
         try {
 
-            HttpResponse<JsonNode> response = Unirest.get("http://" + FIND_REFRRENCE_TO_URL + "/cave/weather/api/v1/{groupName}/{playerID}/{region}")
+            HttpResponse<String> response = Unirest.get("http://" + configuration.get(0) + "/cave/weather/api/v1/{groupName}/{playerID}/{region}")
                     .routeParam("groupName", groupName)
                     .routeParam("playerID", playerID)
-                    .routeParam("region", region.toString())
-                    .asJson();
+                    .routeParam("region", "Arhus")
+                    .asString();
 
-            JSONObject result = response.getBody().getObject();
+            JSONParser parser = new JSONParser();
+            JSONObject result = (JSONObject) parser.parse(response.getBody());
 
             return result;
 
         } catch (UnirestException e) {
+            e.printStackTrace();
+        } catch (ParseException e) {
             e.printStackTrace();
         }
 
