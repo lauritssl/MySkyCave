@@ -18,5 +18,5 @@ export SKYCAVE_CAVESTORAGE_IMPLEMENTATION=cloud.cave.doubles.FakeCaveStorage
 export SKYCAVE_DBSERVER=46.101.43.174:27017
 
 # = Weather service
-export SKYCAVE_WEATHER_IMPLEMENTATION=cloud.cave.doubles.TestStubWeatherService
-export SKYCAVE_WEATHERSERVER=46.101.43.174:8182
+export SKYCAVE_WEATHER_IMPLEMENTATION=cloud.cave.service.StandardWeatherService
+export SKYCAVE_WEATHERSERVER=caveweather.baerbak.com:8182
