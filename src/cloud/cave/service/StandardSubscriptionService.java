@@ -10,7 +10,7 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 import org.json.JSONObject;
 
 /**
- * Created by lundtoft on 02/09/15.
+ * Created by Søren Lundtoft & Laurits Langberg on 02/09/15.
  */
 public class StandardSubscriptionService implements SubscriptionService {
 
