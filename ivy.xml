@@ -39,6 +39,12 @@
     <dependency org="org.mindrot" 
                 name="jbcrypt" 
                 rev="0.3m"/>
+
+    <!-- Unirest - restfull client for Java -->
+    <dependency org="com.mashape.unirest"
+                name="unirest-java"
+                rev="1.4.7"/>
+
   </dependencies>
 
 </ivy-module>
