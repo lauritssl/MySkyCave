@@ -5,6 +5,8 @@ import org.slf4j.*;
 
 import cloud.cave.ipc.*;
 
+import java.net.ConnectException;
+
 /** Collection of functions used in both client side proxies.
  * 
  * @author Henrik Baerbak Christensen, Aarhus University.
@@ -27,14 +29,8 @@ public class ClientCommon {
   public static JSONObject requestAndAwaitReply(ClientRequestHandler crh, JSONObject requestJson) {
     JSONObject replyJson = null;
 
-    try {
-      replyJson = crh.sendRequestAndBlockUntilReply(requestJson);
-    } catch (CaveIPCException e) {
-      logger.error("Failed due to IPC Exception", e);
-      replyJson = Marshaling.createInvalidReplyWithExplantion(StatusCode.SERVER_FAILURE, 
-          "requestAndAwaitReply failed due to IPC Exception: "+ e.getMessage());
-      return replyJson;
-    }
+    replyJson = crh.sendRequestAndBlockUntilReply(requestJson);
+
     // throw an exception in case an error occurred
     String statusCode = replyJson.get(MarshalingKeys.ERROR_CODE_KEY).toString();
     if (! statusCode.equals(StatusCode.OK)) {

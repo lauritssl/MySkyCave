@@ -3,6 +3,7 @@ package cloud.cave.client;
 import java.io.*;
 import java.util.List;
 
+import cloud.cave.ipc.CaveIPCException;
 import org.json.simple.JSONObject;
 
 import cloud.cave.common.PlayerSessionExpiredException;
@@ -91,17 +92,20 @@ public class CmdInterpreter {
         if (line.length() > 0) {
           // split into into tokes on whitespace
           String[] tokens = line.split("\\s");
+          try {
+            // First handle the 'short hand' notation for movement
+            if (tokens[0].length() == 1) {
+              char primaryCommand = line.charAt(0);
 
-          // First handle the 'short hand' notation for movement
-          if (tokens[0].length() == 1) {
-            char primaryCommand = line.charAt(0);
+              handleSingleCharCommand(primaryCommand);
 
-            handleSingleCharCommand(primaryCommand);
-
-          } else {
-            handleMultipleCharCommand(tokens[0], tokens);
+            } else {
+              handleMultipleCharCommand(tokens[0], tokens);
+            }
+            systemOut.println();
+          } catch (CaveIPCException e){
+            systemOut.println("*** Sorry - I cannot do that as I am disconnected from the cave, please quit ***");
           }
-          systemOut.println();
         }
       } while (!line.equals("q"));
     } catch (PlayerSessionExpiredException exc) {
