@@ -2,6 +2,7 @@ package cloud.cave.config.socket;
 
 import java.io.*;
 import java.net.*;
+import java.time.LocalDateTime;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.*;
@@ -75,19 +76,24 @@ public class SocketReactor implements Reactor {
   }
 
   private void readMessageAndDispatch(Socket clientSocket) throws IOException {
+
+    //Timestamp for logging
+    LocalDateTime dateTime = LocalDateTime.now();
+
     PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
     BufferedReader in = new BufferedReader(new InputStreamReader(
         clientSocket.getInputStream()));
 
     String inputLine;
     inputLine = in.readLine();
-    System.out.println("--> Received " + inputLine);
+    System.out.println("["+ dateTime.toString() +"] --> Received " + inputLine); //Timestamp added to output
     
     JSONObject requestJson = null, reply = null;
     try {
       requestJson = (JSONObject) parser.parse(inputLine);
       reply = invoker.handleRequest(requestJson);
-      System.out.println("--< replied: " + reply);
+      dateTime = LocalDateTime.now(); //Timestamp updated after reply
+      System.out.println("["+ dateTime.toString() +"] --< replied: " + reply); //Timestamp added to output
     } catch (ParseException e) {
       String errorMsg = "JSON Parse error on input = " + inputLine;
       logger.error(errorMsg, e);
