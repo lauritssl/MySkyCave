@@ -20,6 +20,13 @@ public class SaboteurWeatherService implements WeatherService {
 
         JSONObject result = new JSONObject();
 
+        //Fix for mac OSX - default look and feel does not work.
+        try {
+            UIManager.setLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         if(JOptionPane.showConfirmDialog(null, "Do you want a TimeOut?", "TimeOutMaker",JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION){
             result.put("authenticated", "false");
             result.put("errorMessage", "SERVER_TIMEOUT");
