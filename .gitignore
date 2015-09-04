@@ -1,5 +1,6 @@
 .idea/
 build/
 TEST-RESULT/
+lib/
 skycave.log
-skycave.log.1
+skycave.log.*
