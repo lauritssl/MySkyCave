@@ -37,7 +37,7 @@ public class StandardWeatherService implements WeatherService {
         }
 
         try {
-            Unirest.setTimeouts(10, 10);
+            Unirest.setTimeouts(5000, 5000);
             HttpResponse<String> response = Unirest.get("http://" + configuration.get(0) + "/cave/weather/api/v1/{groupName}/{playerID}/{region}")
                     .routeParam("groupName", groupName)
                     .routeParam("playerID", playerID)
