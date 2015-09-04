@@ -5,6 +5,7 @@ import cloud.cave.server.common.ServerConfiguration;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
+import org.apache.http.conn.ConnectTimeoutException;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -36,7 +37,7 @@ public class StandardWeatherService implements WeatherService {
         }
 
         try {
-
+            Unirest.setTimeouts(10, 10);
             HttpResponse<String> response = Unirest.get("http://" + configuration.get(0) + "/cave/weather/api/v1/{groupName}/{playerID}/{region}")
                     .routeParam("groupName", groupName)
                     .routeParam("playerID", playerID)
@@ -49,9 +50,16 @@ public class StandardWeatherService implements WeatherService {
             JSONObject result = (JSONObject) parser.parse(response.getBody());
 
             return result;
-
         } catch (UnirestException e) {
-            e.printStackTrace();
+            if (e.getMessage().contains("org.apache.http.conn.ConnectTimeoutException:")){
+                JSONObject result = new JSONObject();
+                result.put("authenticated", "false");
+                result.put("errorMessage", "SERVER_TIMEOUT");
+                return result;
+            }else{
+                e.printStackTrace();
+            }
+
         } catch (ParseException e) {
             e.printStackTrace();
         }

@@ -142,8 +142,12 @@ public class CmdInterpreter {
 
     } else if (command.equals("weather")) {
       String weather = player.getWeather();
-      systemOut.println("The weather at: " + player.getRegion());
-      systemOut.println(weather);
+      if(weather.contains("SERVER_TIMEOUT")){
+        systemOut.println("*** Sorry - weather information is not available ***");
+      }else {
+        systemOut.println("The weather at: " + player.getRegion());
+        systemOut.println(weather);
+      }
 
     } else if (command.equals("post") && tokens.length > 1) {
       String message = mergeTokens(tokens, 1);
