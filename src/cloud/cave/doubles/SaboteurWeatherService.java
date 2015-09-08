@@ -1,6 +1,7 @@
 package cloud.cave.doubles;
 
 import cloud.cave.domain.Region;
+import cloud.cave.ipc.CaveTimeOutException;
 import cloud.cave.server.common.ServerConfiguration;
 import cloud.cave.service.StandardWeatherService;
 import cloud.cave.service.WeatherService;
@@ -28,8 +29,7 @@ public class SaboteurWeatherService implements WeatherService {
         }
 
         if(JOptionPane.showConfirmDialog(null, "Do you want a TimeOut?", "TimeOutMaker",JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION){
-            result.put("authenticated", "false");
-            result.put("errorMessage", "SERVER_TIMEOUT");
+            throw new CaveTimeOutException("*** Sorry - weather information is not available ***");
         } else{
             result = weatherService.requestWeather(groupName, playerID, region);
         }
