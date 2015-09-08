@@ -139,7 +139,7 @@ public class StandardServerPlayer implements Player {
 
   @Override
   public String getWeather() {
-    JSONObject weatherAsJson = 
+    JSONObject weatherAsJson =
         weatherService.requestWeather(getGroupName(), getID(), getRegion());
     String weather = convertToFormattedString(weatherAsJson);
     return weather;

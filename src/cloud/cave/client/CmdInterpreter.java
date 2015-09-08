@@ -1,7 +1,6 @@
 package cloud.cave.client;
 
 import java.io.*;
-import java.time.LocalDateTime;
 import java.util.List;
 
 import cloud.cave.ipc.CaveIPCException;
@@ -26,9 +25,6 @@ public class CmdInterpreter {
   private PrintStream systemOut;
   private InputStream systemIn;
 
-  private int weatherTimeoutConter;
-  private LocalDateTime weatherOpenCircuitStartTime;
-
   /**
    * Construct the interpreter.
    * 
@@ -48,8 +44,6 @@ public class CmdInterpreter {
 
     this.systemOut = systemOut;
     this.systemIn = systemIn;
-
-    weatherTimeoutConter = 0;
     
     Login loginResult = null;
 
@@ -147,30 +141,9 @@ public class CmdInterpreter {
       systemOut.println("   in local session: " + player.getSessionID());
 
     } else if (command.equals("weather")) {
-      LocalDateTime now = LocalDateTime.now();
-      if(weatherTimeoutConter < 3){
-        String weather = player.getWeather();
-        if(weather.contains("SERVER_TIMEOUT")){
-          systemOut.println("*** Sorry - weather information is not available ***");
-          weatherTimeoutConter++;
-        } else {
-          systemOut.println("The weather at: " + player.getRegion());
-          systemOut.println(weather);
-          weatherTimeoutConter = 0;
-        }
-      } else if(weatherTimeoutConter == 3) {
-        weatherOpenCircuitStartTime = LocalDateTime.now();
-        systemOut.println("*** Sorry - no weather (open circuit) ***");
-        weatherTimeoutConter++;
-      } else{
-
-        if(now.isAfter(weatherOpenCircuitStartTime.plusSeconds(60))){
-          weatherTimeoutConter = 2; //half-open circuit
-          handleMultipleCharCommand(command, tokens);
-        } else{
-          systemOut.println("*** Sorry - no weather (open circuit) ***");
-        }
-      }
+      String weather = player.getWeather();
+      systemOut.println("The weather at: " + player.getRegion());
+      systemOut.println(weather);
 
 
     } else if (command.equals("post") && tokens.length > 1) {
