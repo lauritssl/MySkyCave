@@ -4,6 +4,7 @@ import java.io.*;
 import java.util.List;
 
 import cloud.cave.ipc.CaveIPCException;
+import cloud.cave.ipc.CaveTimeOutException;
 import org.json.simple.JSONObject;
 
 import cloud.cave.common.PlayerSessionExpiredException;
@@ -103,6 +104,15 @@ public class CmdInterpreter {
               handleMultipleCharCommand(tokens[0], tokens);
             }
             systemOut.println();
+          } catch (CaveTimeOutException e){
+            switch (e.getMessage()){
+              case "TIME_OUT_OPEN_CIRCUIT":
+                systemOut.println("*** Sorry - no weather (open circuit) ***");
+                break;
+              default:
+                systemOut.println("*** Sorry - weather information is not available ***");
+            }
+
           } catch (CaveIPCException e){
             systemOut.println("*** Sorry - I cannot do that as I am disconnected from the cave, please quit ***");
           }

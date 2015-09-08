@@ -6,11 +6,13 @@ import cloud.cave.server.common.ServerConfiguration;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
-import org.apache.http.conn.ConnectTimeoutException;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 
 /**
@@ -21,10 +23,20 @@ public class StandardWeatherService implements WeatherService {
     private ServerConfiguration configuration;
     private int timeOutTry = 0;
     private LocalDateTime weatherOpenCircuitStartTime;
+    private static Logger logger = LoggerFactory.getLogger(StandardWeatherService.class);
+
+    @Override
+    public void initialize(ServerConfiguration config) {
+        configuration = config;
+        Unirest.setTimeouts(5000, 5000);
+    }
 
     @Override
     public JSONObject requestWeather(String groupName, String playerID, Region region) throws CaveTimeOutException{
+
         LocalDateTime now = LocalDateTime.now();
+        String errMsg;
+
         if(timeOutTry < 3){
             //Switch case to account for different spelling on weather server
             String regionStr;
@@ -43,7 +55,6 @@ public class StandardWeatherService implements WeatherService {
             }
 
             try {
-                Unirest.setTimeouts(5000, 5000);
                 HttpResponse<String> response = Unirest.get("http://" + configuration.get(0) + "/cave/weather/api/v1/{groupName}/{playerID}/{region}")
                         .routeParam("groupName", groupName)
                         .routeParam("playerID", playerID)
@@ -57,9 +68,12 @@ public class StandardWeatherService implements WeatherService {
                 timeOutTry = 0;
                 return result;
             } catch (UnirestException e) {
-                if (e.getMessage().contains("org.apache.http.conn.ConnectTimeoutException:")){
+                if (e.getMessage().contains("Timeout")){
                     timeOutTry++;
-                    throw new CaveTimeOutException("*** Sorry - weather information is not available ***", e);
+                    errMsg = "Weather service timed out (closed circuit). Try: "+timeOutTry;
+                    logger.error(errMsg);
+                    System.out.println(errMsg);
+                    throw new CaveTimeOutException("TIME_OUT_CLOSED_CIRCUIT", e);
                 }else{
                     e.printStackTrace();
                 }
@@ -69,26 +83,27 @@ public class StandardWeatherService implements WeatherService {
             }
         }else if(timeOutTry == 3){
             weatherOpenCircuitStartTime = LocalDateTime.now();
-            System.out.println("*** Sorry - no weather (open circuit) ***");
+            errMsg = "Weather service in open circuit.";
+            logger.error(errMsg);
+            System.out.println(errMsg);
             timeOutTry++;
-            throw new CaveTimeOutException("*** Sorry - no weather (open circuit) ***");
+            throw new CaveTimeOutException("TIME_OUT_OPEN_CIRCUIT");
         }else {
             if (now.isAfter(weatherOpenCircuitStartTime.plusSeconds(60))) {
                 timeOutTry = 2; //half-open circuit
-                System.out.println("*** Weather (half-open circuit) ***");
-                requestWeather(groupName, playerID, region);
+                errMsg = "Weather service in half-open circuit. Attempting again...";
+                logger.error(errMsg);
+                System.out.println(errMsg);
+                return requestWeather(groupName, playerID, region);
             } else {
-                System.out.println("*** Sorry - no weather (open circuit) ***");
-                throw new CaveTimeOutException("*** Sorry - no weather (open circuit) ***");
+                errMsg = "Weather service in open circuit.";
+                logger.error(errMsg);
+                System.out.println(errMsg);
+                throw new CaveTimeOutException("TIME_OUT_OPEN_CIRCUIT");
             }
         }
         return null;
 
-    }
-
-    @Override
-    public void initialize(ServerConfiguration config) {
-        configuration = config;
     }
 
     @Override

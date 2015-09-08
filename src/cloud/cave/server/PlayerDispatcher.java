@@ -141,8 +141,9 @@ public class PlayerDispatcher implements Dispatcher {
         reply = Marshaling.createValidReplyWithReturnValue("notused", asArray);
       }
     } catch (PlayerSessionExpiredException exc) {
-      reply = Marshaling.createInvalidReplyWithExplantion(StatusCode.SERVER_PLAYER_SESSION_EXPIRED_FAILURE,
-          exc.getMessage());
+      reply = Marshaling.createInvalidReplyWithExplantion(StatusCode.SERVER_PLAYER_SESSION_EXPIRED_FAILURE, exc.getMessage());
+    } catch (CaveTimeOutException exc){
+      reply = Marshaling.createInvalidReplyWithExplantion(StatusCode.SERVER_WEATHER_SERVICE_TIMEOUT, exc.getMessage());
     }
     return reply;
   }

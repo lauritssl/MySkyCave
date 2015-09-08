@@ -14,6 +14,7 @@ import javax.swing.*;
 public class SaboteurWeatherService implements WeatherService {
 
     private StandardWeatherService weatherService;
+    private ServerConfiguration weatherConfig;
 
     @Override
     public JSONObject requestWeather(String groupName, String playerID, Region region) {
@@ -31,6 +32,7 @@ public class SaboteurWeatherService implements WeatherService {
             weatherService.initialize(new ServerConfiguration("caveweather.baerbak.com", 8184));
             result = weatherService.requestWeather(groupName, playerID, region);
         } else{
+            weatherService.initialize(weatherConfig);
             result = weatherService.requestWeather(groupName, playerID, region);
         }
 
@@ -41,6 +43,7 @@ public class SaboteurWeatherService implements WeatherService {
     public void initialize(ServerConfiguration config) {
         weatherService = new StandardWeatherService();
         weatherService.initialize(config);
+        weatherConfig = config;
     }
 
     @Override
