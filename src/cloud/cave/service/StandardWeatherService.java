@@ -59,7 +59,7 @@ public class StandardWeatherService implements WeatherService {
             } catch (UnirestException e) {
                 if (e.getMessage().contains("org.apache.http.conn.ConnectTimeoutException:")){
                     timeOutTry++;
-                    throw new CaveTimeOutException("WeatherServiceTimeOut", e);
+                    throw new CaveTimeOutException("*** Sorry - weather information is not available ***", e);
                 }else{
                     e.printStackTrace();
                 }
@@ -71,7 +71,7 @@ public class StandardWeatherService implements WeatherService {
             weatherOpenCircuitStartTime = LocalDateTime.now();
             System.out.println("*** Sorry - no weather (open circuit) ***");
             timeOutTry++;
-            throw new CaveTimeOutException("WeatherServiceOpenCircuit");
+            throw new CaveTimeOutException("*** Sorry - no weather (open circuit) ***");
         }else {
             if (now.isAfter(weatherOpenCircuitStartTime.plusSeconds(60))) {
                 timeOutTry = 2; //half-open circuit
@@ -79,7 +79,7 @@ public class StandardWeatherService implements WeatherService {
                 requestWeather(groupName, playerID, region);
             } else {
                 System.out.println("*** Sorry - no weather (open circuit) ***");
-                throw new CaveTimeOutException("WeatherServiceOpenCircuit");
+                throw new CaveTimeOutException("*** Sorry - no weather (open circuit) ***");
             }
         }
         return null;
