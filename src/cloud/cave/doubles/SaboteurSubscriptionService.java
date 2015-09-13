@@ -32,7 +32,7 @@ public class SaboteurSubscriptionService implements SubscriptionService {
             subscriptionService.setTimeout(100, 10); //Setting timeout for faster testing
             result = subscriptionService.lookup(loginName, password);
         } else{
-            subscriptionService.setTimeout(1, 10); //Setting timeout for faster testing
+            subscriptionService.setTimeout(1000, 10); //Setting timeout for faster testing
             result = subscriptionService.lookup(loginName, password);
         }
 
@@ -44,7 +44,7 @@ public class SaboteurSubscriptionService implements SubscriptionService {
         subscriptionService = new CircuitBreakerSubscriptionService();
         subscriptionService.initialize(config);
         configuration = config;
-        subscriptionService.setTimeout(1, 10); //Setting timeout for faster testing
+        subscriptionService.setTimeout(1000, 10); //Setting timeout for faster testing
     }
 
     @Override

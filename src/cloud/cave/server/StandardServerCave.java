@@ -2,6 +2,7 @@ package cloud.cave.server;
 
 import java.util.UUID;
 
+import cloud.cave.ipc.CaveTimeOutException;
 import org.slf4j.*;
 
 import cloud.cave.common.*;
@@ -24,7 +25,7 @@ public class StandardServerCave implements Cave {
   private CaveStorage storage;
   private SubscriptionService subscriptionService;
   private WeatherService weatherService;
-  private PlayerSessionCache sessionCache;
+  private SimpleInMemoryCache sessionCache;
 
   private Logger logger;
 
@@ -38,7 +39,7 @@ public class StandardServerCave implements Cave {
     
     // TODO Currently the session cache strategy is not injected
     sessionCache = new SimpleInMemoryCache();
-    
+
     logger = LoggerFactory.getLogger(StandardServerCave.class);
   }
 
@@ -63,6 +64,23 @@ public class StandardServerCave implements Cave {
     String errorMsg = null;
     try {
       subscription = subscriptionService.lookup(loginName, password);
+    } catch (CaveTimeOutException e){
+      if(e.getMessage().equals("TIME_OUT_CLOSED_CIRCUIT")){
+        logger.error("Subscription service timeout (closed circut");
+        System.out.println("Subscription service timeout (closed circut)");
+        return new LoginRecord(LoginResult.LOGIN_FAILED_SERVER_ERROR);
+      } else {
+        logger.error("Subscription service timeout (open circut");
+        System.out.println("Subscription service timeout (open circut)");
+        StandardServerPlayer p = (StandardServerPlayer) sessionCache.findPlayer(loginName);
+        System.out.println(p.toString());
+
+        if(p == null){
+          return new LoginRecord(LoginResult.LOGIN_FAILED_SERVER_ERROR);
+        }
+        
+        subscription = new SubscriptionRecord(p.getSessionID(), p.getName(), p.getGroupName(), p.getRegion());
+      }
     } catch (CaveIPCException e) {
       errorMsg="Lookup failed on subscription service due to IPC exception:"+e.getMessage();
       logger.error(errorMsg);
