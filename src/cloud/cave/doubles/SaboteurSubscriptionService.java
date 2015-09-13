@@ -29,11 +29,9 @@ public class SaboteurSubscriptionService implements SubscriptionService {
         }
 
         if(JOptionPane.showConfirmDialog(null, "Do you want a TimeOut?", "TimeOutMaker",JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION){
-            subscriptionService.initialize(new ServerConfiguration("caveweather.baerbak.com", 8184));
-            subscriptionService.setTimeout(1, 10); //Setting timeout for faster testing
+            subscriptionService.setTimeout(100, 10); //Setting timeout for faster testing
             result = subscriptionService.lookup(loginName, password);
         } else{
-            subscriptionService.initialize(configuration);
             subscriptionService.setTimeout(1, 10); //Setting timeout for faster testing
             result = subscriptionService.lookup(loginName, password);
         }
