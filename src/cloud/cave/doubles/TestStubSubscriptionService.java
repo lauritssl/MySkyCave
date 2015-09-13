@@ -38,6 +38,29 @@ public class TestStubSubscriptionService implements SubscriptionService {
     subscriptionMap.put("mathilde_aarskort", 
         new SubscriptionPair("321",
         new SubscriptionRecord("user-003","Mathilde", "grp02", Region.AALBORG)));
+
+    //20 extra players added for testing
+    subscriptionMap.put("rwar400t", new SubscriptionPair("727b9c", new SubscriptionRecord("user-004", "user-004", "RWA4", Region.AARHUS)));
+    subscriptionMap.put("rwar401t", new SubscriptionPair("ynizl2", new SubscriptionRecord("user-005", "user-005", "RWA4", Region.AARHUS)));
+    subscriptionMap.put("rwar402t", new SubscriptionPair("f0s4p3", new SubscriptionRecord("user-006", "user-006", "RWA4", Region.AARHUS)));
+    subscriptionMap.put("rwar403t", new SubscriptionPair("plcs74", new SubscriptionRecord("user-007", "user-007", "RWA4", Region.AARHUS)));
+    subscriptionMap.put("rwar404t", new SubscriptionPair("v76ifd", new SubscriptionRecord("user-008", "user-008", "RWA4", Region.AARHUS)));
+    subscriptionMap.put("rwar405t", new SubscriptionPair("jxe9ha", new SubscriptionRecord("user-009", "user-009", "RWA4", Region.AARHUS)));
+    subscriptionMap.put("rwar406t", new SubscriptionPair("6xp9jl", new SubscriptionRecord("user-010", "user-010", "RWA4", Region.AARHUS)));
+    subscriptionMap.put("rwar407t", new SubscriptionPair("u3mxug", new SubscriptionRecord("user-011", "user-011", "RWA4", Region.AARHUS)));
+    subscriptionMap.put("rwar408t", new SubscriptionPair("trv9gy", new SubscriptionRecord("user-012", "user-012", "RWA4", Region.AARHUS)));
+    subscriptionMap.put("rwar409t", new SubscriptionPair("1d5fh3", new SubscriptionRecord("user-013", "user-013", "RWA4", Region.AARHUS)));
+    subscriptionMap.put("rwar410t", new SubscriptionPair("zsafci", new SubscriptionRecord("user-014", "user-014", "RWA4", Region.AARHUS)));
+    subscriptionMap.put("rwar411t", new SubscriptionPair("v324q6", new SubscriptionRecord("user-015", "user-015", "RWA4", Region.AARHUS)));
+    subscriptionMap.put("rwar412t", new SubscriptionPair("2jdfhz", new SubscriptionRecord("user-016", "user-016", "RWA4", Region.AARHUS)));
+    subscriptionMap.put("rwar413t", new SubscriptionPair("zja3ig", new SubscriptionRecord("user-017", "user-017", "RWA4", Region.AARHUS)));
+    subscriptionMap.put("rwar414t", new SubscriptionPair("04nj10", new SubscriptionRecord("user-018", "user-018", "RWA4", Region.AARHUS)));
+    subscriptionMap.put("rwar415t", new SubscriptionPair("zu5qar", new SubscriptionRecord("user-019", "user-019", "RWA4", Region.AARHUS)));
+    subscriptionMap.put("rwar416t", new SubscriptionPair("qildw2", new SubscriptionRecord("user-020", "user-020", "RWA4", Region.AARHUS)));
+    subscriptionMap.put("rwar417t", new SubscriptionPair("61w8sh", new SubscriptionRecord("user-021", "user-021", "RWA4", Region.AARHUS)));
+    subscriptionMap.put("rwar418t", new SubscriptionPair("exwt5w", new SubscriptionRecord("user-022", "user-022", "RWA4", Region.AARHUS)));
+    subscriptionMap.put("rwar419t", new SubscriptionPair("n7lzqw", new SubscriptionRecord("user-023", "user-023", "RWA4", Region.AARHUS)));
+
     // and populate with a single 'reserved' user which is used by the
     // course's automatic testing system. Leave this reserved login
     // in the test stub because otherwise our grading system will not

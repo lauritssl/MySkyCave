@@ -239,7 +239,7 @@ public class TestPlayerProxy {
     }
 
     try {
-      p2.getPlayersHere();
+      p2.getPlayersHere(0, 9);
       fail("The first client must throw an exception when attempting any further calls");
     } catch( PlayerSessionExpiredException e ) {
       assertThat( e.getMessage(), containsString("The session for player user-003 is no longer valid"));

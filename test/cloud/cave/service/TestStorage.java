@@ -100,13 +100,13 @@ public class TestStorage {
     assertThat(storage.getPlayerByID(id1).isInCave(), is(true));
     
     // get all players at 2,7,3
-    List<PlayerRecord>  ll = storage.computeListOfPlayersAt(p273.getPositionString());
+    List<PlayerRecord>  ll = storage.computeListOfPlayersAt(p273.getPositionString(), 0, 9);
     
     assertThat( ll.size(), is(1));
     assertThat( ll.get(0).getPlayerID(), is(id1));
     
     // and verify none are at 8,7,6
-    ll = storage.computeListOfPlayersAt(p876.getPositionString());
+    ll = storage.computeListOfPlayersAt(p876.getPositionString(), 0, 9);
     assertThat( ll.size(), is(0));
     
     // Intro another player
@@ -118,7 +118,7 @@ public class TestStorage {
     // move player 2 to same 8,7,6
     updatePlayerPosition(id2, p876.getPositionString());
 
-    ll = storage.computeListOfPlayersAt(p876.getPositionString());
+    ll = storage.computeListOfPlayersAt(p876.getPositionString(), 0, 9);
     assertThat( ll.size(), is(1));
     assertThat( ll.get(0).getPlayerID(), is(id2));
     
@@ -126,7 +126,7 @@ public class TestStorage {
     updatePlayerPosition(id1, p876.getPositionString());
     
     // and verify that computation is correct
-    ll = storage.computeListOfPlayersAt(p876.getPositionString());
+    ll = storage.computeListOfPlayersAt(p876.getPositionString(), 0, 9);
     assertThat( ll.size(), is(2));
     assertThat( ll.get(0).getPlayerID(), either(is(id1)).
         or(is(id2)));
