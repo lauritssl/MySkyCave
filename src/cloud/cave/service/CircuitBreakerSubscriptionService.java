@@ -1,14 +1,9 @@
 package cloud.cave.service;
 
-import cloud.cave.domain.Region;
 import cloud.cave.ipc.CaveTimeOutException;
 import cloud.cave.server.common.ServerConfiguration;
-import com.mashape.unirest.http.HttpResponse;
+import cloud.cave.server.common.SubscriptionRecord;
 import com.mashape.unirest.http.Unirest;
-import com.mashape.unirest.http.exceptions.UnirestException;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,48 +12,48 @@ import java.time.LocalDateTime;
 /**
  * Created by lundtoft on 13/09/15.
  */
-public class CircuitBreakerWeatherService implements WeatherService {
+public class CircuitBreakerSubscriptionService implements SubscriptionService {
 
-    private WeatherService ws;
+    private SubscriptionService ss;
     private int timeOutTry = 0;
-    private LocalDateTime weatherOpenCircuitStartTime;
+    private LocalDateTime subscriptionOpenCircuitStartTime;
     private static Logger logger = LoggerFactory.getLogger(StandardWeatherService.class);
     private int waitTime;
 
     @Override
-    public JSONObject requestWeather(String groupName, String playerID, Region region) throws CaveTimeOutException{
+    public SubscriptionRecord lookup(String loginName, String password) {
         LocalDateTime now = LocalDateTime.now();
         String errMsg;
 
         if(timeOutTry < 3){
 
             try {
-                JSONObject result = ws.requestWeather(groupName, playerID, region);
+                SubscriptionRecord result = ss.lookup(loginName, password);
                 timeOutTry = 0;
                 return result;
             } catch (CaveTimeOutException e) {
                 timeOutTry++;
-                errMsg = "Weather service timed out (closed circuit). Attempts: "+timeOutTry;
+                errMsg = "Subscription service timed out (closed circuit). Attempts: "+timeOutTry;
                 logger.error(errMsg);
                 System.out.println(errMsg);
                 throw new CaveTimeOutException("TIME_OUT_CLOSED_CIRCUIT", e);
             }
         }else if(timeOutTry == 3){
-            weatherOpenCircuitStartTime = LocalDateTime.now();
-            errMsg = "Weather service in open circuit.";
+            subscriptionOpenCircuitStartTime = LocalDateTime.now();
+            errMsg = "Subscription service in open circuit.";
             logger.error(errMsg);
             System.out.println(errMsg);
             timeOutTry++;
             throw new CaveTimeOutException("TIME_OUT_OPEN_CIRCUIT");
         }else {
-            if (now.isAfter(weatherOpenCircuitStartTime.plusSeconds(waitTime))) {
+            if (now.isAfter(subscriptionOpenCircuitStartTime.plusSeconds(waitTime))) {
                 timeOutTry = 2; //half-open circuit
-                errMsg = "Weather service in half-open circuit. Attempting again...";
+                errMsg = "Subscription service in half-open circuit. Attempting again...";
                 logger.error(errMsg);
                 System.out.println(errMsg);
-                return requestWeather(groupName, playerID, region);
+                return lookup(loginName, password);
             } else {
-                errMsg = "Weather service in open circuit.";
+                errMsg = "Subscription service in open circuit.";
                 logger.error(errMsg);
                 System.out.println(errMsg);
                 throw new CaveTimeOutException("TIME_OUT_OPEN_CIRCUIT");
@@ -68,19 +63,19 @@ public class CircuitBreakerWeatherService implements WeatherService {
 
     @Override
     public void initialize(ServerConfiguration config) {
-        ws = new StandardWeatherService();
-        ws.initialize(config);
+        ss = new StandardSubscriptionService();
+        ss.initialize(config);
         setTimeout(5, 60);
     }
 
     @Override
     public void disconnect() {
-        ws.disconnect();
+        ss.disconnect();
     }
 
     @Override
     public ServerConfiguration getConfiguration() {
-        return ws.getConfiguration();
+        return ss.getConfiguration();
     }
 
     public void setTimeout(int timeout, int waitTime){
