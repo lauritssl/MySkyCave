@@ -30,29 +30,12 @@ public class StandardWeatherService implements WeatherService {
     @Override
     public JSONObject requestWeather(String groupName, String playerID, Region region) throws CaveTimeOutException{
 
-        //Switch case to account for different spelling on weather server
-        String regionStr;
-        switch (region){
-            case AALBORG:
-                regionStr = "Aalborg";
-                break;
-            case ODENSE:
-                regionStr = "Odense";
-                break;
-            case COPENHAGEN:
-                regionStr = "Copenhagen";
-                break;
-            default:
-                regionStr = "Arhus";
-        }
-
-
         HttpResponse<String> response = null;
         try {
             response = Unirest.get("http://" + configuration.get(0) + "/cave/weather/api/v1/{groupName}/{playerID}/{region}")
                     .routeParam("groupName", groupName)
                     .routeParam("playerID", playerID)
-                    .routeParam("region", regionStr)
+                    .routeParam("region", convertRegionFormat(region))
                     .asString();
 
             //Needed as Unirest gives us an org.json.JSONObject and we are working with an org.json.simple.JSONObject
@@ -83,5 +66,21 @@ public class StandardWeatherService implements WeatherService {
     @Override
     public ServerConfiguration getConfiguration() {
         return configuration;
+    }
+
+    /**
+     * Converting region to format used by weather service
+     */
+    public String convertRegionFormat(Region region){
+        switch (region){
+            case AALBORG:
+                return "Aalborg";
+            case ODENSE:
+                return "Odense";
+            case COPENHAGEN:
+                return "Copenhagen";
+            default:
+                return "Arhus";
+        }
     }
 }
