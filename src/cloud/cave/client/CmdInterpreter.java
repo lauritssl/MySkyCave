@@ -220,7 +220,11 @@ public class CmdInterpreter {
       }else{
         int from = (lookcount * 10);
         int to = (lookcount * 10) + 9;
-        systemOut.println(player.getPlayersHere(from, to));
+        for ( String p : player.getPlayersHere(from, to) ) {
+          systemOut.println("  ["+from+"] " + p);
+          from++;
+        }
+        lookcount++;
       }
 
       break;
@@ -248,6 +252,33 @@ public class CmdInterpreter {
     }
     case 'd': {
       tryToMove(getDirectionFromChar(primaryCommand));
+      break;
+    }
+
+    // add 20 users for testing
+    case 'a':{
+      lookcount = 0;
+      cave.login("rwar400t", "727b9c");
+      cave.login("rwar401t", "ynizl2");
+      cave.login("rwar402t", "f0s4p3");
+      cave.login("rwar403t", "plcs74");
+      cave.login("rwar404t", "v76ifd");
+      cave.login("rwar405t", "jxe9ha");
+      cave.login("rwar406t", "6xp9jl");
+      cave.login("rwar407t", "u3mxug");
+      cave.login("rwar408t", "trv9gy");
+      cave.login("rwar409t", "1d5fh3");
+      cave.login("rwar410t", "zsafci");
+      cave.login("rwar411t", "v324q6");
+      cave.login("rwar412t", "2jdfhz");
+      cave.login("rwar413t", "zja3ig");
+      cave.login("rwar414t", "04nj10");
+      cave.login("rwar415t", "zu5qar");
+      cave.login("rwar416t", "qildw2");
+      cave.login("rwar417t", "61w8sh");
+      cave.login("rwar418t", "exwt5w");
+      cave.login("rwar419t", "n7lzqw");
+      systemOut.println("20 test users added to server");
       break;
     }
 
