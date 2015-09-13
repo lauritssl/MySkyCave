@@ -35,7 +35,8 @@ public class SimpleInMemoryCache implements PlayerSessionCache {
   }
 
   public Player findPlayer(String loginName){
-    for(Player p : cacheOfOnlinePlayer.values()){
+    for(String key : cacheOfOnlinePlayer.keySet()){
+      Player p = cacheOfOnlinePlayer.get(key);
       if(p.getName().equals(loginName)){
         return p;
       }
