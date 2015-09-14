@@ -1,5 +1,6 @@
 package cloud.cave.server;
 
+import java.util.HashMap;
 import java.util.UUID;
 
 import cloud.cave.ipc.CaveTimeOutException;
@@ -25,7 +26,8 @@ public class StandardServerCave implements Cave {
   private CaveStorage storage;
   private SubscriptionService subscriptionService;
   private WeatherService weatherService;
-  private SimpleInMemoryCache sessionCache;
+  private PlayerSessionCache sessionCache;
+  private HashMap<String, String> knownUsers;
 
   private Logger logger;
 
@@ -41,6 +43,8 @@ public class StandardServerCave implements Cave {
     sessionCache = new SimpleInMemoryCache();
 
     logger = LoggerFactory.getLogger(StandardServerCave.class);
+
+    knownUsers = new HashMap<>();
   }
 
   /**
@@ -72,14 +76,16 @@ public class StandardServerCave implements Cave {
       } else {
         logger.error("Subscription service timeout (open circut");
         System.out.println("Subscription service timeout (open circut)");
-        StandardServerPlayer p = (StandardServerPlayer) sessionCache.findPlayer(loginName);
-        System.out.println(p.toString());
-
-        if(p == null){
+        if(knownUsers.get(loginName) != null){
+          PlayerRecord p = storage.getPlayerByID(knownUsers.get(loginName));
+          subscription = new SubscriptionRecord(p.getPlayerID(), p.getPlayerName(), p.getGroupName(), p.getRegion());
+          System.out.println(p.toString());
+        }else{
           return new LoginRecord(LoginResult.LOGIN_FAILED_SERVER_ERROR);
         }
-        
-        subscription = new SubscriptionRecord(p.getSessionID(), p.getName(), p.getGroupName(), p.getRegion());
+
+
+
       }
     } catch (CaveIPCException e) {
       errorMsg="Lookup failed on subscription service due to IPC exception:"+e.getMessage();
@@ -115,7 +121,7 @@ public class StandardServerCave implements Cave {
     
     // Cache the player session for faster lookups
     sessionCache.add(playerID, player);
-    
+    knownUsers.put(loginName, playerID);
     // And finalize the login result
     result = new LoginRecord(player, theResult);
 
@@ -132,7 +138,7 @@ public class StandardServerCave implements Cave {
   private LoginResult startPlayerSession(SubscriptionRecord subscription,
       String sessionID) {
     LoginResult result = LoginResult.LOGIN_SUCCESS; // Assume success
-    
+
     // get the record of the player from storage
     PlayerRecord playerRecord = storage.getPlayerByID(subscription.getPlayerID());
     
