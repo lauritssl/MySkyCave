@@ -61,6 +61,7 @@ public class TestWeather {
     assertThat(weather, containsString("The weather service failed with message: GroupName grp02 or playerID user-003 is not authenticated"));
   }
 
+  @Ignore
   @Test
   public void shouldOnlyTimeoutWhenCallingTheSlowWeatherService(){
     SaboteurWeatherServiceAutomated ws = new SaboteurWeatherServiceAutomated();
@@ -88,6 +89,7 @@ public class TestWeather {
 
   }
 
+  @Ignore
   @Test
   public void shouldBeOpenCircutAfter3Try(){
     SaboteurWeatherServiceAutomated ws = new SaboteurWeatherServiceAutomated();

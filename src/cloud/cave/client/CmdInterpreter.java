@@ -45,27 +45,38 @@ public class CmdInterpreter {
 
     this.systemOut = systemOut;
     this.systemIn = systemIn;
-    
-    Login loginResult = null;
 
     systemOut.println("Trying to log in player with loginName: " + loginName);
 
-    loginResult = cave.login(loginName, pwd);
+    Login loginResult = attemptLogin(loginName, pwd);
+
+    player = loginResult.getPlayer();
+  }
+
+  private Login attemptLogin(String loginName, String pwd){
+    Login loginResult = cave.login(loginName, pwd);
 
     boolean success = LoginResult.isValidLogin(loginResult.getResultCode());
 
     if (!success) {
-      systemOut.println("*** SORRY! The login failed. Reason: "
-          + loginResult.getResultCode());
-      System.exit(-1);
+      if(loginResult.getResultCode() == LoginResult.SUBSCRIPTION_SERVICE_NOT_RESPONDING){
+        //Keep trying if timed out (will be stopped by circuit-breaker and degrade gracefully)
+        systemOut.println("*** Subscription service is not responding, attempting again...");
+        return attemptLogin(loginName, pwd);
+      } else {
+        systemOut.println("*** SORRY! The login failed. Reason: "
+                + loginResult.getResultCode());
+        System.exit(-1);
+      }
     }
     if (loginResult.getResultCode() == LoginResult.LOGIN_SUCCESS_PLAYER_ALREADY_LOGGED_IN) {
       systemOut.println("*** WARNING! User '"
-          + loginResult.getPlayer().getName() + "' is ALREADY logged in! ***");
+              + loginResult.getPlayer().getName() + "' is ALREADY logged in! ***");
       systemOut
-          .println("*** The previous session will be disconnected. ***");
+              .println("*** The previous session will be disconnected. ***");
     }
-    player = loginResult.getPlayer();
+
+    return loginResult;
   }
 
   /**
@@ -210,8 +221,8 @@ public class CmdInterpreter {
   private void handleSingleCharCommand(char primaryCommand) {
     switch (primaryCommand) {
     // look
-    case 'l': {
-      systemOut.println(player.getLongRoomDescription());
+      case 'l': {
+        systemOut.println(player.getLongRoomDescription());
       break;
     }
     // The movement commands

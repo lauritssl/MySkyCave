@@ -70,22 +70,23 @@ public class StandardServerCave implements Cave {
       subscription = subscriptionService.lookup(loginName, password);
     } catch (CaveTimeOutException e){
       if(e.getMessage().equals("TIME_OUT_CLOSED_CIRCUIT")){
-        logger.error("Subscription service timeout (closed circut");
-        System.out.println("Subscription service timeout (closed circut)");
-        return new LoginRecord(LoginResult.SUBSCRIPTION_SERVICE_FAILED);
+        errorMsg = "Subscription service timeout (closed circuit)";
+        logger.error(errorMsg);
+        System.out.println(errorMsg);
+        return new LoginRecord(LoginResult.SUBSCRIPTION_SERVICE_NOT_RESPONDING);
       } else {
-        logger.error("Subscription service timeout (open circut");
-        System.out.println("Subscription service timeout (open circut)");
+        errorMsg = "Subscription service timeout (open circuit)";
+        logger.error(errorMsg);
+        System.out.println(errorMsg);
         if(knownUsers.get(loginName) != null){
           PlayerRecord p = storage.getPlayerByID(knownUsers.get(loginName));
           subscription = new SubscriptionRecord(p.getPlayerID(), p.getPlayerName(), p.getGroupName(), p.getRegion());
-          logger.error("Login due to known user");
-          System.out.println("Login due to known user");
+          errorMsg = "Trusted user '" + loginName + "' was logged in without confirmation";
+          logger.error(errorMsg);
+          System.out.println("**** " + errorMsg);
         }else{
           return new LoginRecord(LoginResult.SUBSCRIPTION_SERVICE_FAILED);
         }
-
-
 
       }
     } catch (CaveIPCException e) {

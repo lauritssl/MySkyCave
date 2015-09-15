@@ -5,7 +5,9 @@ import static org.hamcrest.CoreMatchers.*;
 
 import cloud.cave.doubles.AllTestCircuitBreakerFactory;
 import cloud.cave.doubles.SaboteurSubscriptionServiceAutomated;
+import cloud.cave.server.common.ServerConfiguration;
 import cloud.cave.service.CircuitBreakerSubscriptionService;
+import cloud.cave.service.StandardSubscriptionService;
 import org.junit.*;
 
 import cloud.cave.common.*;
@@ -118,7 +120,7 @@ public class TestCave {
     sss.initialize(null);
     ss.initialize(sss.getConfiguration());
     ss.setSubscriptionService(sss);
-    ss.setTimeout(1, 1);
+    ss.setTimeout(1, 1); //Set open circuit to 1 second
 
 
     AllTestCircuitBreakerFactory factory = new AllTestCircuitBreakerFactory();
@@ -144,6 +146,10 @@ public class TestCave {
     p1 = loginResult.getPlayer();
     assertNull(p1);
 
+    loginResult = cave.login("magnus_aarskort", "312");
+    p1 = loginResult.getPlayer();
+    assertNull(p1);
+
     try {
       Thread.sleep(1100);
     } catch (InterruptedException e) {
@@ -154,6 +160,16 @@ public class TestCave {
     p1 = loginResult.getPlayer();
     assertNull(p1);
 
+  }
 
+  @Test
+  public void serverConfigurationShouldBeTheSame(){
+    ServerConfiguration sv = new ServerConfiguration("caveweather.baerbak.com", 8182);
+
+    CircuitBreakerSubscriptionService ss = new CircuitBreakerSubscriptionService();
+
+    ss.initialize(sv);
+
+    assertEquals("Server configuration is the same: ", sv, ss.getConfiguration());
   }
 }
