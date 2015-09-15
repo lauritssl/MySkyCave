@@ -225,7 +225,19 @@ public class CmdInterpreter {
     switch (primaryCommand) {
     // look
     case 'l': {
-      systemOut.println(player.getLongRoomDescription());
+      if(lookcount == 0){
+        systemOut.println(player.getLongRoomDescription());
+        lookcount++;
+      }else{
+        int from = (lookcount * 10);
+        int to = (lookcount * 10) + 9;
+        for ( String p : player.getPlayersHere(from, to) ) {
+          systemOut.println("  ["+from+"] " + p);
+          from++;
+        }
+        lookcount++;
+      }
+
       break;
     }
     // The movement commands
