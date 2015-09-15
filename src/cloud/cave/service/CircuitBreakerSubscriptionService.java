@@ -17,7 +17,7 @@ public class CircuitBreakerSubscriptionService implements SubscriptionService {
     private SubscriptionService ss;
     private int timeOutTry = 0;
     private LocalDateTime subscriptionOpenCircuitStartTime;
-    private static Logger logger = LoggerFactory.getLogger(StandardWeatherService.class);
+    private static Logger logger = LoggerFactory.getLogger(StandardSubscriptionService.class);
     private int waitTime;
 
     @Override
