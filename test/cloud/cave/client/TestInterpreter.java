@@ -49,7 +49,7 @@ public class TestInterpreter {
         "l\nwho\nweather\nsys\nn\ns\ne\nw\nd\nu\np\nh\nz\ndig u Another upper room\n"+
             "u\ndig d NotPossible\npost A message\nread\n"+
             "exec HomeCommand null\nexec BimseCommand null\nexec HomeCommand\n"+
-            "exit\nq\n";
+            "exit\na\nq\n";
     
     CmdInterpreter cmd = new CmdInterpreter(caveProxy, "magnus_aarskort", "312", 
         ps, makeToInputStream(cmdList));
@@ -115,7 +115,10 @@ public class TestInterpreter {
     assertThat(output, containsString("Exec commands require at least one parameter. Set it to null if irrelevant"));
     // exit
     assertThat(output, containsString("I do not understand that long command. (Type 'h' for help)"));
-    
+
+    // add 20 test players
+    assertThat(output, containsString("20 test users added to server"));
+
     // quit
     assertThat(output, containsString("Logged player out, result = SUCCESS"));
     
@@ -137,6 +140,54 @@ public class TestInterpreter {
     
     assertThat(output, containsString("*** WARNING! User 'Magnus' is ALREADY logged in! ***"));
     assertThat(output, containsString("*** The previous session will be disconnected. ***"));
+  }
+
+  @Test
+  public void shouldShowMorePlayersWhenLookIsCalledAgain(){
+    String cmdList = "l\nq\n";
+
+    //Logging 20 users in
+    caveProxy.login("rwar400t", "727b9c");
+    caveProxy.login("rwar401t", "ynizl2");
+    caveProxy.login("rwar402t", "f0s4p3");
+    caveProxy.login("rwar403t", "plcs74");
+    caveProxy.login("rwar404t", "v76ifd");
+    caveProxy.login("rwar405t", "jxe9ha");
+    caveProxy.login("rwar406t", "6xp9jl");
+    caveProxy.login("rwar407t", "u3mxug");
+    caveProxy.login("rwar408t", "trv9gy");
+    caveProxy.login("rwar409t", "1d5fh3");
+    caveProxy.login("rwar410t", "zsafci");
+    caveProxy.login("rwar411t", "v324q6");
+    caveProxy.login("rwar412t", "2jdfhz");
+    caveProxy.login("rwar413t", "zja3ig");
+    caveProxy.login("rwar414t", "04nj10");
+    caveProxy.login("rwar415t", "zu5qar");
+    caveProxy.login("rwar416t", "qildw2");
+    caveProxy.login("rwar417t", "61w8sh");
+    caveProxy.login("rwar418t", "exwt5w");
+    caveProxy.login("rwar419t", "n7lzqw");
+
+    CmdInterpreter cmd = new CmdInterpreter(caveProxy, "magnus_aarskort", "312",
+            ps, makeToInputStream(cmdList));
+    cmd.readEvalLoop();
+
+    String output = baos.toString();
+
+    //Check if the maximum player count is displayed the first time
+    assertThat(output, containsString("[9]"));
+
+    //Calling look twice
+    cmdList = "l\nl\nq\n";
+
+    cmd = new CmdInterpreter(caveProxy, "magnus_aarskort", "312",
+            ps, makeToInputStream(cmdList));
+    cmd.readEvalLoop();
+
+    output = baos.toString();
+
+    //Check if the output contains more players after calling look command twice
+    assertThat(output, containsString("[10]"));
   }
 
   @Ignore // Require the System.exit(-1) to be refactored out of the interpreter to work.

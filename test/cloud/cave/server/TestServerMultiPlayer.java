@@ -61,16 +61,16 @@ public class TestServerMultiPlayer {
     p1.move(Direction.WEST);
     
     // only myself
-    assertEquals( 1, p1.getPlayersHere().size());
+    assertEquals(1, p1.getPlayersHere(0, 9).size());
     List<String> playersHere;
-    playersHere = p1.getPlayersHere();
-    assertThat( playersHere, hasItem(p1.getName()));
+    playersHere = p1.getPlayersHere(0, 9);
+    assertThat(playersHere, hasItem(p1.getName()));
     
     // move p2 there
     p2.move(Direction.WEST);
-    assertEquals( 2, p2.getPlayersHere().size());
-    playersHere = p2.getPlayersHere();
-    assertThat( playersHere, hasItems(p1.getName(), p2.getName()));
+    assertEquals(2, p2.getPlayersHere(0, 9).size());
+    playersHere = p2.getPlayersHere(0, 9);
+    assertThat(playersHere, hasItems(p1.getName(), p2.getName()));
   }
   
   @Test
@@ -79,7 +79,7 @@ public class TestServerMultiPlayer {
     String longDescription = p1.getLongRoomDescription();
     // System.out.println(longDescription);
 
-    assertThat( longDescription, containsString("You see other players:"));
+    assertThat(longDescription, containsString("You see other players:"));
     assertThat( longDescription, containsString("Magnus"));
     assertThat( longDescription, containsString("Mathilde"));
     

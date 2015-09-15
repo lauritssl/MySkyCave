@@ -7,6 +7,8 @@ import org.json.simple.*;
 import cloud.cave.common.PlayerSessionExpiredException;
 import cloud.cave.domain.*;
 import cloud.cave.ipc.*;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 /** Dispatcher implementation covering all the methods
  * belonging to calls to Player.
@@ -72,7 +74,13 @@ public class PlayerDispatcher implements Dispatcher {
       }
       // === PLAYERS HERE
       else if (methodKey.equals(MarshalingKeys.GET_PLAYERS_HERE_METHOD_KEY)) {
-        List<String> playersHere = player.getPlayersHere();
+
+        //Nasty way, but that's the json.simple way
+        JSONArray inputArray = (JSONArray) new JSONParser().parse(parameter1);
+        Integer from = (int) (long) inputArray.get(0);
+        Integer to = (int) (long) inputArray.get(1);
+
+        List<String> playersHere = player.getPlayersHere(from, to);
         String[] asArray = new String[playersHere.size()];
         playersHere.toArray(asArray);
 
@@ -144,6 +152,8 @@ public class PlayerDispatcher implements Dispatcher {
       reply = Marshaling.createInvalidReplyWithExplantion(StatusCode.SERVER_PLAYER_SESSION_EXPIRED_FAILURE, exc.getMessage());
     } catch (CaveTimeOutException exc){
       reply = Marshaling.createInvalidReplyWithExplantion(StatusCode.SERVER_WEATHER_SERVICE_TIMEOUT, exc.getMessage());
+    } catch (ParseException e) {
+      e.printStackTrace();
     }
     return reply;
   }

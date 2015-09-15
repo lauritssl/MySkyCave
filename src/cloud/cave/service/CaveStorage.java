@@ -95,7 +95,7 @@ public interface CaveStorage extends ExternalService {
    *          position of the room
    * @return list of player records identify the players presently in the room
    */
-  List<PlayerRecord> computeListOfPlayersAt(String positionString);
+  List<PlayerRecord> computeListOfPlayersAt(String positionString, int from, int to);
 
   /**
    * Compute the number of players that are present in the cave ('has an active

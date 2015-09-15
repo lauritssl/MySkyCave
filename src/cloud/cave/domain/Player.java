@@ -124,7 +124,7 @@ public interface Player {
    * 
    * @return list of player data transfer objects
    */
-  List<String> getPlayersHere();
+  List<String> getPlayersHere(int from, int to);
 
   /**
    * Get a long description of the current room, which includes a textual list

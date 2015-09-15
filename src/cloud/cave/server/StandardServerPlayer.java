@@ -86,12 +86,15 @@ public class StandardServerPlayer implements Player {
     for ( Direction dir : getExitSet()) {
       allOfIt += "  "+dir+" ";
     }
-    allOfIt += "\nYou see other players:\n";
-    List<String> playerNameList = getPlayersHere();
+    allOfIt += "\nYou see other players:";
+    List<String> playerNameList = getPlayersHere(0, 9);
     int count = 0;
     for ( String p : playerNameList ) {
-      allOfIt += "  ["+count+"] " + p;
+      allOfIt += "\n  ["+count+"] " + p;
       count ++;
+    }
+    if(count > 9){
+      allOfIt +="\n Look again to discover more players...";
     }
     return allOfIt;
   }
@@ -112,8 +115,8 @@ public class StandardServerPlayer implements Player {
   }
 
   @Override
-  public List<String> getPlayersHere() {
-    List<PlayerRecord> playerList = storage.computeListOfPlayersAt(getPosition());
+  public List<String> getPlayersHere(int from, int to) {
+    List<PlayerRecord> playerList = storage.computeListOfPlayersAt(getPosition(), from, to);
     List<String> playerNameList = new ArrayList<String>();
     for (PlayerRecord record: playerList) {
       playerNameList.add(record.getPlayerName());

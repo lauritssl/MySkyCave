@@ -129,7 +129,7 @@ public class CommonPlayerTests {
     Login loginResult = caveProxy.login( "mathilde_aarskort", "321");
     Player m = loginResult.getPlayer();
     
-    List<String> playersInEntryRoom = m.getPlayersHere();
+    List<String> playersInEntryRoom = m.getPlayersHere(0, 9);
     assertThat(playersInEntryRoom.size(), is(2));
     assertThat(playersInEntryRoom, hasItems(m.getName(), playerAlreadyInRoom.getName()));
     
@@ -145,7 +145,7 @@ public class CommonPlayerTests {
     assertNotNull(m2);
     // System.out.println(m2.getLongRoomDescription());
     
-    playersInEntryRoom = m2.getPlayersHere();
+    playersInEntryRoom = m2.getPlayersHere(0, 9);
     assertThat(playersInEntryRoom.size(), is(2));
     assertThat(playersInEntryRoom, hasItems(m2.getName(), playerAlreadyInRoom.getName()));
   }

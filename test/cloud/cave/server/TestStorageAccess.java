@@ -173,8 +173,8 @@ class SpyCaveStorage implements CaveStorage {
   }
 
 
-  public List<PlayerRecord> computeListOfPlayersAt(String positionString) {
-    return decoratee.computeListOfPlayersAt(positionString);
+  public List<PlayerRecord> computeListOfPlayersAt(String positionString, int from, int to) {
+    return decoratee.computeListOfPlayersAt(positionString, from, to);
   }
 
 

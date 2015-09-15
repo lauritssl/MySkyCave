@@ -118,9 +118,13 @@ public class FakeCaveStorage implements CaveStorage {
   }
 
   @Override
-  public List<PlayerRecord> computeListOfPlayersAt(String positionString) {
+  public List<PlayerRecord> computeListOfPlayersAt(String positionString, int from, int to) {
     List<PlayerRecord> theList = new ArrayList<PlayerRecord>();
-    for ( String id : playerId2PlayerSpecs.keySet() ) {
+    if(playerId2PlayerSpecs.size() < to){
+      to = playerId2PlayerSpecs.size()-1;
+    }
+    for(int i = from; i <= to; i++){
+      String id = (String) playerId2PlayerSpecs.keySet().toArray()[i];
       PlayerRecord ps = playerId2PlayerSpecs.get(id);
       if (ps.isInCave() && ps.getPositionAsString().equals(positionString)) {
         theList.add(ps);

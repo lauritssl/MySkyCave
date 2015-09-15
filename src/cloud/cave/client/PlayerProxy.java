@@ -152,8 +152,9 @@ public class PlayerProxy implements Player {
   }
 
   @Override
-  public List<String> getPlayersHere() {
-    JSONObject requestJson = createRequestObject(MarshalingKeys.GET_PLAYERS_HERE_METHOD_KEY, "");
+  public List<String> getPlayersHere(int from, int to) {
+    String[] range = new String[] {Integer.toString(from), Integer.toString(to)};
+    JSONObject requestJson = createRequestObject(MarshalingKeys.GET_PLAYERS_HERE_METHOD_KEY, Arrays.toString(range));
     JSONObject replyJson = requestAndAwaitReply(requestJson);
     // The HEAD is not used, the list of player names are stored in the TAIL
     List<String> playersHere = new ArrayList<String>();
