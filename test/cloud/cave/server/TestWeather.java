@@ -67,7 +67,7 @@ public class TestWeather {
   public void shouldOnlyTimeoutWhenCallingTheSlowWeatherService(){
     CircuitBreakerWeatherService ws = new CircuitBreakerWeatherService();
     SaboteurWeatherServiceAutomated sws = new SaboteurWeatherServiceAutomated();
-    sws.initialize(new ServerConfiguration("test", 4242));
+    sws.initialize(null);
 
     ws.setWeatherService(sws);
 
@@ -96,7 +96,7 @@ public class TestWeather {
   @Test
   public void shouldBeOpenCircuitAfter3Attempts(){
     CircuitBreakerWeatherService ws = new CircuitBreakerWeatherService();
-    ws.initialize(new ServerConfiguration("test", 4242));
+    ws.initialize(null);
     SaboteurWeatherServiceAutomated sws = new SaboteurWeatherServiceAutomated();
     sws.initialize(ws.getConfiguration());
 
@@ -193,7 +193,7 @@ public class TestWeather {
   public void shouldBeAbleToCallDisconnect(){
     //Method not used, test to achieve 100% overage
     CircuitBreakerWeatherService ws = new CircuitBreakerWeatherService();
-    ws.initialize(new ServerConfiguration("test", 4242));
+    ws.initialize(null);
     SaboteurWeatherServiceAutomated sws = new SaboteurWeatherServiceAutomated();
     sws.initialize(ws.getConfiguration());
 
