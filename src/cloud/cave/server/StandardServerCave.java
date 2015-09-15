@@ -72,16 +72,17 @@ public class StandardServerCave implements Cave {
       if(e.getMessage().equals("TIME_OUT_CLOSED_CIRCUIT")){
         logger.error("Subscription service timeout (closed circut");
         System.out.println("Subscription service timeout (closed circut)");
-        return new LoginRecord(LoginResult.LOGIN_FAILED_SERVER_ERROR);
+        return new LoginRecord(LoginResult.SUBSCRIPTION_SERVICE_FAILED);
       } else {
         logger.error("Subscription service timeout (open circut");
         System.out.println("Subscription service timeout (open circut)");
         if(knownUsers.get(loginName) != null){
           PlayerRecord p = storage.getPlayerByID(knownUsers.get(loginName));
           subscription = new SubscriptionRecord(p.getPlayerID(), p.getPlayerName(), p.getGroupName(), p.getRegion());
-          System.out.println(p.toString());
+          logger.error("Login due to known user");
+          System.out.println("Login due to known user");
         }else{
-          return new LoginRecord(LoginResult.LOGIN_FAILED_SERVER_ERROR);
+          return new LoginRecord(LoginResult.SUBSCRIPTION_SERVICE_FAILED);
         }
 
 

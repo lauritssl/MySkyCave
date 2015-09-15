@@ -81,7 +81,11 @@ public class CircuitBreakerSubscriptionService implements SubscriptionService {
     public void setTimeout(int timeout, int waitTime){
         this.waitTime = waitTime;
 
-        timeout = timeout;
         Unirest.setTimeouts(timeout, timeout);
+    }
+
+    public void setSubscriptionService(SubscriptionService ss){
+        this.ss = ss;
+        ss.initialize(ss.getConfiguration());
     }
 }
