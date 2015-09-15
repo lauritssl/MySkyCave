@@ -36,11 +36,7 @@ public class StandardSubscriptionService implements SubscriptionService {
             }
 
         } catch (UnirestException e) {
-            if (e.getMessage().contains("Timeout")){
-                throw new CaveTimeOutException("TIME_OUT_CLOSED_CIRCUIT", e);
-            }else{
-                e.printStackTrace();
-            }
+            throw new CaveTimeOutException("TIME_OUT_CLOSED_CIRCUIT", e);
         }
 
         return null;

@@ -45,11 +45,7 @@ public class StandardWeatherService implements WeatherService {
             return result;
 
         } catch (UnirestException e) {
-            if (e.getMessage().contains("Timeout")){
-                throw new CaveTimeOutException("TIME_OUT", e);
-            }else{
-                e.printStackTrace();
-            }
+            throw new CaveTimeOutException("TIME_OUT", e);
         } catch (ParseException e) {
             e.printStackTrace();
         }
