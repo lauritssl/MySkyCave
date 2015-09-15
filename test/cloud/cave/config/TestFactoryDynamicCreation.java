@@ -74,6 +74,30 @@ public class TestFactoryDynamicCreation {
     assertThat(crh.toString(), containsString("SocketClientRequestHandler. AppServer Cfg: skycave.mycompany.com:37123."));
   }
 
+  @Test
+  public void shouldCreateProperCaveReplicaSet() {
+    envReader.setNextExpectation(Config.SKYCAVE_CAVESTORAGE_IMPLEMENTATION, 
+        "cloud.cave.doubles.FakeCaveStorage");
+    envReader.setNextExpectation(Config.SKYCAVE_DBSERVER, 
+        "192.168.237.130:27017,192.168.237.131:27018,192.168.237.132:27019");
+    CaveStorage storage = factory.createCaveStorage();
+    assertThat(storage.toString(), containsString("FakeCaveStorage"));
+    
+    ServerConfiguration config = storage.getConfiguration();
+    assertNotNull("The initialization must assign a cave storage configuration.", config);
+    assertThat(config.get(0).getHostName(), is("192.168.237.130"));
+    assertThat(config.get(0).getPortNumber(), is(27017));
+    
+    assertThat(config.get(1).getHostName(), is("192.168.237.131"));
+    assertThat(config.get(1).getPortNumber(), is(27018));
+    
+    assertThat(config.get(2).getHostName(), is("192.168.237.132"));
+    assertThat(config.get(2).getPortNumber(), is(27019));
+    
+    assertThat(config.size(), is(3));
+  }
+
+  
   @Test(expected=CaveClassNotFoundException.class)
   public void shouldThrowExceptionForNonExistingCaveClass() {
     envReader = new StubEnvironmentReaderStrategy();
@@ -94,6 +118,18 @@ public class TestFactoryDynamicCreation {
     ExternalService storage = factory.createCaveStorage();
   }
 
+  @Test(expected=CaveConfigurationNotSetException.class)
+  public void shouldThrowExceptionIfIndexError() {
+    envReader.setNextExpectation(Config.SKYCAVE_CAVESTORAGE_IMPLEMENTATION, 
+        "cloud.cave.doubles.FakeCaveStorage");
+    envReader.setNextExpectation(Config.SKYCAVE_DBSERVER, 
+        "192.168.237.130:27017,192.168.237.131:27018,192.168.237.132:27019");
+    CaveStorage storage = factory.createCaveStorage();
+    
+    ServerConfiguration config = storage.getConfiguration();
+    config.get(4);
+  }
+  
   @Test
   public void shouldCreateProperWeatherInstances() {
     envReader.setNextExpectation(Config.SKYCAVE_WEATHER_IMPLEMENATION, 
@@ -116,5 +152,6 @@ public class TestFactoryDynamicCreation {
     assertThat(cfg.get(0).getHostName(), is("www.baerbak.com"));
     assertThat(cfg.get(0).getPortNumber(), is(12345));
     
+    assertThat(cfg.toString(), containsString("www.baerbak.com:12345"));
   }
 }
