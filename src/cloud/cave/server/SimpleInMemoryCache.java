@@ -33,4 +33,14 @@ public class SimpleInMemoryCache implements PlayerSessionCache {
   public void remove(String sessionID) {
     cacheOfOnlinePlayer.remove(sessionID);
   }
+
+  public Player findPlayer(String loginName){
+    for(String key : cacheOfOnlinePlayer.keySet()){
+      Player p = cacheOfOnlinePlayer.get(key);
+      if(p.getName().equals(loginName)){
+        return p;
+      }
+    }
+    return null;
+  }
 }

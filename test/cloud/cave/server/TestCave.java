@@ -3,6 +3,11 @@ package cloud.cave.server;
 import static org.junit.Assert.*;
 import static org.hamcrest.CoreMatchers.*;
 
+import cloud.cave.doubles.AllTestCircuitBreakerFactory;
+import cloud.cave.doubles.SaboteurSubscriptionServiceAutomated;
+import cloud.cave.server.common.ServerConfiguration;
+import cloud.cave.service.CircuitBreakerSubscriptionService;
+import cloud.cave.service.StandardSubscriptionService;
 import org.junit.*;
 
 import cloud.cave.common.*;
@@ -45,7 +50,7 @@ public class TestCave {
   @Test
   public void shouldNotAllowLoggingOutMathildeTwice() {
     enterBothPlayers();
-    CommonCaveTests.shouldNotAllowLoggingOutMathildeTwice(cave,p2);
+    CommonCaveTests.shouldNotAllowLoggingOutMathildeTwice(cave, p2);
   }
   
   @Test
@@ -68,5 +73,103 @@ public class TestCave {
     assertThat(configString, containsString("CaveStorage: cloud.cave.doubles.FakeCaveStorage"));
     assertThat(configString, containsString("SubscriptionService: cloud.cave.doubles.TestStubSubscriptionService"));
     assertThat(configString, containsString("WeatherService: cloud.cave.doubles.TestStubWeatherService"));
+  }
+
+  @Test
+  public void shouldLogYouInAfter3TryIfYourAreAKnownPlayer(){
+    CircuitBreakerSubscriptionService ss = new CircuitBreakerSubscriptionService();
+    SaboteurSubscriptionServiceAutomated sss = new SaboteurSubscriptionServiceAutomated();
+    sss.initialize(null);
+    ss.initialize(sss.getConfiguration());
+    ss.setSubscriptionService(sss);
+
+    AllTestCircuitBreakerFactory factory = new AllTestCircuitBreakerFactory();
+    factory.setSubscriptionService(ss);
+
+    cave = new StandardServerCave(factory);
+
+    Login loginResult = cave.login( "magnus_aarskort", "312");
+    p1 = loginResult.getPlayer();
+    assertNotNull(p1);
+
+    cave.logout(p1.getID());
+
+    sss.throwTimeout(true);
+
+    loginResult = cave.login( "magnus_aarskort", "312");
+    p1 = loginResult.getPlayer();
+    assertNull(p1);
+
+    loginResult = cave.login( "magnus_aarskort", "312");
+    p1 = loginResult.getPlayer();
+    assertNull(p1);
+
+    loginResult = cave.login( "magnus_aarskort", "312");
+    p1 = loginResult.getPlayer();
+    assertNull(p1);
+
+    loginResult = cave.login( "magnus_aarskort", "312");
+    p1 = loginResult.getPlayer();
+    assertNotNull(p1);
+  }
+
+  @Test
+  public void shouldGoToHalfOpenStateIfUserIsNotKnown(){
+    CircuitBreakerSubscriptionService ss = new CircuitBreakerSubscriptionService();
+    SaboteurSubscriptionServiceAutomated sss = new SaboteurSubscriptionServiceAutomated();
+    sss.initialize(null);
+    ss.initialize(sss.getConfiguration());
+    ss.setSubscriptionService(sss);
+    ss.setTimeout(1, 1); //Set open circuit to 1 second
+
+
+    AllTestCircuitBreakerFactory factory = new AllTestCircuitBreakerFactory();
+    factory.setSubscriptionService(ss);
+
+    cave = new StandardServerCave(factory);
+
+    sss.throwTimeout(true);
+
+    Login loginResult = cave.login( "magnus_aarskort", "312");
+    p1 = loginResult.getPlayer();
+    assertNull(p1);
+
+    loginResult = cave.login("magnus_aarskort", "312");
+    p1 = loginResult.getPlayer();
+    assertNull(p1);
+
+    loginResult = cave.login("magnus_aarskort", "312");
+    p1 = loginResult.getPlayer();
+    assertNull(p1);
+
+    loginResult = cave.login( "magnus_aarskort", "312");
+    p1 = loginResult.getPlayer();
+    assertNull(p1);
+
+    loginResult = cave.login("magnus_aarskort", "312");
+    p1 = loginResult.getPlayer();
+    assertNull(p1);
+
+    try {
+      Thread.sleep(1100);
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
+
+    loginResult = cave.login("magnus_aarskort", "312");
+    p1 = loginResult.getPlayer();
+    assertNull(p1);
+
+  }
+
+  @Test
+  public void serverConfigurationShouldBeTheSame(){
+    ServerConfiguration sv = new ServerConfiguration("caveweather.baerbak.com", 8182);
+
+    CircuitBreakerSubscriptionService ss = new CircuitBreakerSubscriptionService();
+
+    ss.initialize(sv);
+
+    assertEquals("Server configuration is the same: ", sv, ss.getConfiguration());
   }
 }

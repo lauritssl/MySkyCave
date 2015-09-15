@@ -10,7 +10,7 @@ public enum LoginResult {
   LOGIN_SUCCESS_PLAYER_ALREADY_LOGGED_IN, // The login was conditionally successful, this is a warning that the player is already logged in
 
   LOGIN_FAILED_UNKNOWN_SUBSCRIPTION, // The login failed, as the player with given id has no subscription
-  LOGIN_FAILED_SERVER_ERROR; // The login failed due to some error on the server side, review server logs
+  LOGIN_FAILED_SERVER_ERROR, SUBSCRIPTION_SERVICE_FAILED, SUBSCRIPTION_SERVICE_NOT_RESPONDING; // The login failed due to some error on the server side, review server logs
 
   /** Return true in case the login result represents a valid
    * login

@@ -1,7 +1,9 @@
 package cloud.cave.server;
 
+import java.util.HashMap;
 import java.util.UUID;
 
+import cloud.cave.ipc.CaveTimeOutException;
 import org.slf4j.*;
 
 import cloud.cave.common.*;
@@ -25,6 +27,7 @@ public class StandardServerCave implements Cave {
   private SubscriptionService subscriptionService;
   private WeatherService weatherService;
   private PlayerSessionCache sessionCache;
+  private HashMap<String, String> knownUsers;
 
   private Logger logger;
 
@@ -38,8 +41,10 @@ public class StandardServerCave implements Cave {
     
     // TODO Currently the session cache strategy is not injected
     sessionCache = new SimpleInMemoryCache();
-    
+
     logger = LoggerFactory.getLogger(StandardServerCave.class);
+
+    knownUsers = new HashMap<>();
   }
 
   /**
@@ -63,6 +68,27 @@ public class StandardServerCave implements Cave {
     String errorMsg = null;
     try {
       subscription = subscriptionService.lookup(loginName, password);
+    } catch (CaveTimeOutException e){
+      if(e.getMessage().equals("TIME_OUT_CLOSED_CIRCUIT")){
+        errorMsg = "Subscription service timeout (closed circuit)";
+        logger.error(errorMsg);
+        System.out.println(errorMsg);
+        return new LoginRecord(LoginResult.SUBSCRIPTION_SERVICE_NOT_RESPONDING);
+      } else {
+        errorMsg = "Subscription service timeout (open circuit)";
+        logger.error(errorMsg);
+        System.out.println(errorMsg);
+        if(knownUsers.get(loginName) != null){
+          PlayerRecord p = storage.getPlayerByID(knownUsers.get(loginName));
+          subscription = new SubscriptionRecord(p.getPlayerID(), p.getPlayerName(), p.getGroupName(), p.getRegion());
+          errorMsg = "Trusted user '" + loginName + "' was logged in without confirmation";
+          logger.error(errorMsg);
+          System.out.println("**** " + errorMsg);
+        }else{
+          return new LoginRecord(LoginResult.SUBSCRIPTION_SERVICE_FAILED);
+        }
+
+      }
     } catch (CaveIPCException e) {
       errorMsg="Lookup failed on subscription service due to IPC exception:"+e.getMessage();
       logger.error(errorMsg);
@@ -97,7 +123,7 @@ public class StandardServerCave implements Cave {
     
     // Cache the player session for faster lookups
     sessionCache.add(playerID, player);
-    
+    knownUsers.put(loginName, playerID);
     // And finalize the login result
     result = new LoginRecord(player, theResult);
 
@@ -114,7 +140,7 @@ public class StandardServerCave implements Cave {
   private LoginResult startPlayerSession(SubscriptionRecord subscription,
       String sessionID) {
     LoginResult result = LoginResult.LOGIN_SUCCESS; // Assume success
-    
+
     // get the record of the player from storage
     PlayerRecord playerRecord = storage.getPlayerByID(subscription.getPlayerID());
     

@@ -3,6 +3,9 @@ package cloud.cave.server;
 import static org.junit.Assert.*;
 import static org.hamcrest.CoreMatchers.*;
 
+import cloud.cave.doubles.SaboteurSubscriptionServiceAutomated;
+import cloud.cave.server.common.ServerConfiguration;
+import cloud.cave.service.CircuitBreakerSubscriptionService;
 import org.junit.*;
 
 import cloud.cave.common.*;
@@ -49,7 +52,7 @@ public class TestServerPlayer {
   public void shouldHaveInitialLocation() {
     description = player.getShortRoomDescription();
     assertTrue("Initial location missing proper description",
-        description.contains("You are standing at the end of a road before a small brick building."));
+            description.contains("You are standing at the end of a road before a small brick building."));
   }
 
   // TDD the movement of a player
@@ -118,10 +121,10 @@ public class TestServerPlayer {
     assertEquals( "(0,0,0)", player.getPosition());    
 
     player.move(Direction.WEST);
-    assertEquals( "(-1,0,0)", player.getPosition());    
+    assertEquals("(-1,0,0)", player.getPosition());
 
     player.move(Direction.EAST);
-    assertEquals( "(0,0,0)", player.getPosition());    
+    assertEquals("(0,0,0)", player.getPosition());
   }
   
   // TDD of the long description
@@ -202,6 +205,19 @@ public class TestServerPlayer {
   public void shouldReturnReasonableToString() {
     assertThat(player.toString(), containsString("StandardServerPlayer [storage=FakeCaveStorage"));
     assertThat(player.toString(), containsString("name=Mikkel, ID=user-001, region=AARHUS"));
+  }
+
+  @Ignore
+  @Test
+  public void shouldLogYouInafter3TryIfYouAreAknownPlayer(){
+    CircuitBreakerSubscriptionService ss = new CircuitBreakerSubscriptionService();
+    SaboteurSubscriptionServiceAutomated sss = new SaboteurSubscriptionServiceAutomated();
+    sss.initialize(new ServerConfiguration("test", 4242));
+
+    ss.initialize(sss.getConfiguration());
+
+    ss.setSubscriptionService(sss);
+
   }
 
 }
