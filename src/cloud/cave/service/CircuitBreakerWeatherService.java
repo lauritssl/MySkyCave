@@ -89,4 +89,9 @@ public class CircuitBreakerWeatherService implements WeatherService {
         timeout = timeout * 1000;
         Unirest.setTimeouts(timeout, timeout);
     }
+
+    public void setWeatherService(WeatherService ws){
+        this.ws = ws;
+        ws.initialize(ws.getConfiguration());
+    }
 }

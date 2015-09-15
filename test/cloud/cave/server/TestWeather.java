@@ -3,9 +3,11 @@ package cloud.cave.server;
 import static org.junit.Assert.*;
 import static org.hamcrest.CoreMatchers.*;
 
+import cloud.cave.doubles.SaboteurWeatherService;
 import cloud.cave.doubles.SaboteurWeatherServiceAutomated;
 import cloud.cave.ipc.CaveTimeOutException;
 import cloud.cave.server.common.ServerConfiguration;
+import cloud.cave.service.CircuitBreakerWeatherService;
 import cloud.cave.service.StandardWeatherService;
 import org.json.simple.JSONObject;
 import org.junit.*;
@@ -63,23 +65,26 @@ public class TestWeather {
 
   @Test
   public void shouldOnlyTimeoutWhenCallingTheSlowWeatherService(){
-    SaboteurWeatherServiceAutomated ws = new SaboteurWeatherServiceAutomated();
-    ws.setTimeout(1,3);
+    CircuitBreakerWeatherService ws = new CircuitBreakerWeatherService();
+    SaboteurWeatherServiceAutomated sws = new SaboteurWeatherServiceAutomated();
+    sws.initialize(new ServerConfiguration("test", 4242));
+
+    ws.setWeatherService(sws);
+
+    ws.setTimeout(1, 1);
+
     Exception exception = null;
 
     try{
-      //Real server
-      ws.initialize(new ServerConfiguration("caveweather.baerbak.com", 8182));
       ws.requestWeather("ITS1", "55e41406e4b067dd3c8fa522", Region.AARHUS);
     }catch (CaveTimeOutException e){
       exception = e;
     }
     assertNull(exception);
 
+    sws.throwTimeout(true);
 
     try{
-      //Slow server
-      ws.setConfig(new ServerConfiguration("caveweather.baerbak.com", 8184));
       ws.requestWeather("ITS1", "55e41406e4b067dd3c8fa522", Region.AARHUS);
     }catch (CaveTimeOutException e){
       exception = e;
@@ -89,41 +94,45 @@ public class TestWeather {
   }
 
   @Test
-  public void shouldBeOpenCircutAfter3Try(){
-    SaboteurWeatherServiceAutomated ws = new SaboteurWeatherServiceAutomated();
+  public void shouldBeOpenCircuitAfter3Attempts(){
+    CircuitBreakerWeatherService ws = new CircuitBreakerWeatherService();
+    ws.initialize(new ServerConfiguration("test", 4242));
+    SaboteurWeatherServiceAutomated sws = new SaboteurWeatherServiceAutomated();
+    sws.initialize(ws.getConfiguration());
 
-    //Slow server
-    ws.initialize(new ServerConfiguration("caveweather.baerbak.com", 8184));
-    ws.setTimeout(1,3);
+    ws.setWeatherService(sws);
+
+    ws.setTimeout(1, 1);
+    sws.throwTimeout(true);
 
     try {
       ws.requestWeather("ITS1", "55e41406e4b067dd3c8fa522", Region.AARHUS);
     }catch (CaveTimeOutException e){
-      assertEquals("The Circut should be open", e.getMessage(), "TIME_OUT_CLOSED_CIRCUIT");
+      assertEquals("The Circuit should be open", e.getMessage(), "TIME_OUT_CLOSED_CIRCUIT");
     }
 
     try {
       ws.requestWeather("ITS1", "55e41406e4b067dd3c8fa522", Region.AARHUS);
     }catch (CaveTimeOutException e){
-      assertEquals("The Circut should be open", e.getMessage(), "TIME_OUT_CLOSED_CIRCUIT");
+      assertEquals("The Circuit should be open", e.getMessage(), "TIME_OUT_CLOSED_CIRCUIT");
     }
 
     try {
       ws.requestWeather("ITS1", "55e41406e4b067dd3c8fa522", Region.AARHUS);
     }catch (CaveTimeOutException e){
-      assertEquals("The Circut should be open", e.getMessage(), "TIME_OUT_CLOSED_CIRCUIT");
+      assertEquals("The Circuit should be open", e.getMessage(), "TIME_OUT_CLOSED_CIRCUIT");
     }
 
     try {
       ws.requestWeather("ITS1", "55e41406e4b067dd3c8fa522", Region.AARHUS);
     }catch (CaveTimeOutException e){
-      assertEquals("The Circut should be open", e.getMessage(), "TIME_OUT_OPEN_CIRCUIT");
+      assertEquals("The Circuit should be open", e.getMessage(), "TIME_OUT_OPEN_CIRCUIT");
     }
 
     try {
       ws.requestWeather("ITS1", "55e41406e4b067dd3c8fa522", Region.AARHUS);
     }catch (CaveTimeOutException e){
-      assertEquals("The Circut should be open", e.getMessage(), "TIME_OUT_OPEN_CIRCUIT");
+      assertEquals("The Circuit should be open", e.getMessage(), "TIME_OUT_OPEN_CIRCUIT");
     }
 
     try {
@@ -135,11 +144,11 @@ public class TestWeather {
     try {
       ws.requestWeather("ITS1", "55e41406e4b067dd3c8fa522", Region.AARHUS);
     }catch (CaveTimeOutException e){
-      assertEquals("The Circut should be open", e.getMessage(), "TIME_OUT_OPEN_CIRCUIT");
+      assertEquals("The Circuit should be open", e.getMessage(), "TIME_OUT_OPEN_CIRCUIT");
     }
 
     try {
-      Thread.sleep(4000);
+      Thread.sleep(1100);
     } catch (InterruptedException e) {
       e.printStackTrace();
     }
@@ -147,8 +156,7 @@ public class TestWeather {
     Exception exception = null;
 
     try{
-      //Real server
-      ws.setConfig(new ServerConfiguration("caveweather.baerbak.com", 8182));
+      sws.throwTimeout(false);
       ws.requestWeather("ITS1", "55e41406e4b067dd3c8fa522", Region.AARHUS);
     }catch (CaveTimeOutException e){
       exception = e;
@@ -179,6 +187,19 @@ public class TestWeather {
     assertEquals("Copenhagen should be equal to Region.COPENHAGEN", "Copenhagen", ws.convertRegionFormat(Region.COPENHAGEN));
 
     assertEquals("Odense should be equal to Region.ODENSE", "Odense", ws.convertRegionFormat(Region.ODENSE));
+  }
+
+  @Test
+  public void shouldBeAbleToCallDisconnect(){
+    //Method not used, test to achieve 100% overage
+    CircuitBreakerWeatherService ws = new CircuitBreakerWeatherService();
+    ws.initialize(new ServerConfiguration("test", 4242));
+    SaboteurWeatherServiceAutomated sws = new SaboteurWeatherServiceAutomated();
+    sws.initialize(ws.getConfiguration());
+
+    ws.setWeatherService(sws);
+
+    ws.disconnect(); //Calling disconnect
   }
 
 }

@@ -11,21 +11,24 @@ import org.json.simple.JSONObject;
  * Created by lalan on 13/09/15.
  */
 public class SaboteurWeatherServiceAutomated implements WeatherService{
-    private CircuitBreakerWeatherService ws;
-    private ServerConfiguration config;
-    private int timeout, waitTime;
+
+    private WeatherService ws;
+    private boolean timeout = false;
 
     @Override
     public JSONObject requestWeather(String groupName, String playerID, Region region) throws CaveTimeOutException{
-        ws.initialize(config);
-        ws.setTimeout(timeout, waitTime);
-        return ws.requestWeather(groupName, playerID, region);
+
+        if(timeout) {
+            //Throwing fake timeout
+            throw new CaveTimeOutException("TIME_OUT");
+        } else{
+            return ws.requestWeather(groupName, playerID, region);
+        }
     }
 
     @Override
     public void initialize(ServerConfiguration config) {
-        this.config = config;
-        ws = new CircuitBreakerWeatherService();
+        ws = new TestStubWeatherService();
         ws.initialize(config);
     }
 
@@ -36,15 +39,10 @@ public class SaboteurWeatherServiceAutomated implements WeatherService{
 
     @Override
     public ServerConfiguration getConfiguration() {
-        return config;
+        return ws.getConfiguration();
     }
 
-    public void setConfig(ServerConfiguration config){
-        this.config = config;
-    }
-
-    public void setTimeout(int timeout, int waitTime){
+    public void throwTimeout(boolean timeout){
         this.timeout = timeout;
-        this.waitTime = waitTime;
     }
 }
