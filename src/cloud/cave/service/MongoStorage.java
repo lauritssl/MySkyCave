@@ -85,9 +85,13 @@ public class MongoStorage implements CaveStorage {
 
     @Override
     public PlayerRecord getPlayerByID(String playerID) {
-        Document response = players.find(eq("playerID", playerID)).first();
-        return new PlayerRecord(new SubscriptionRecord(response.getString("playerID"), response.getString("playerName"), response.getString("groupName"), Region.valueOf(response.getString("region"))),
-                response.getString("positionAsString"), response.getString("sessionID"));
+        if(players.find(eq("playerID", playerID)).first() != null){
+            Document response = players.find(eq("playerID", playerID)).first();
+            return new PlayerRecord(new SubscriptionRecord(response.getString("playerID"), response.getString("playerName"), response.getString("groupName"), Region.valueOf(response.getString("region"))),
+                    response.getString("positionAsString"), response.getString("sessionID"));
+        }
+        return null;
+
     }
 
     @Override
