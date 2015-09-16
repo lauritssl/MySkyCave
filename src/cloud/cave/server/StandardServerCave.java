@@ -27,7 +27,7 @@ public class StandardServerCave implements Cave {
   private SubscriptionService subscriptionService;
   private WeatherService weatherService;
   private PlayerSessionCache sessionCache;
-  private HashMap<String, String> knownUsers;
+  private HashMap<String, KnownUser> knownUsers;
 
   private Logger logger;
 
@@ -78,8 +78,8 @@ public class StandardServerCave implements Cave {
         errorMsg = "Subscription service timeout (open circuit)";
         logger.error(errorMsg);
         System.out.println(errorMsg);
-        if(knownUsers.get(loginName) != null){
-          PlayerRecord p = storage.getPlayerByID(knownUsers.get(loginName));
+        if(knownUsers.get(loginName) != null && knownUsers.get(loginName).getPassword().equals(password)){
+          PlayerRecord p = storage.getPlayerByID(knownUsers.get(loginName).getPlayerID());
           subscription = new SubscriptionRecord(p.getPlayerID(), p.getPlayerName(), p.getGroupName(), p.getRegion());
           errorMsg = "Trusted user '" + loginName + "' was logged in without confirmation";
           logger.error(errorMsg);
@@ -123,7 +123,7 @@ public class StandardServerCave implements Cave {
     
     // Cache the player session for faster lookups
     sessionCache.add(playerID, player);
-    knownUsers.put(loginName, playerID);
+    knownUsers.put(loginName, new KnownUser(password, playerID));
     // And finalize the login result
     result = new LoginRecord(player, theResult);
 
@@ -197,5 +197,22 @@ public class StandardServerCave implements Cave {
 
   public PlayerSessionCache getCache() {
    return sessionCache;
+  }
+
+  class KnownUser{
+    private String password, playerID;
+
+    public KnownUser(String password, String playerID) {
+      this.password = password;
+      this.playerID = playerID;
+    }
+
+    public String getPassword() {
+      return password;
+    }
+
+    public String getPlayerID() {
+      return playerID;
+    }
   }
 }
