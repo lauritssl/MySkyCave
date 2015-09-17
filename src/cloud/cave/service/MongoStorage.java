@@ -25,8 +25,13 @@ public class MongoStorage implements CaveStorage {
 
     @Override
     public RoomRecord getRoom(String positionString) {
-        Document doc = rooms.find(eq("pos", positionString)).first();
-        return new RoomRecord(doc.getString("desc"));
+
+        if(rooms.find(eq("pos", positionString)).first() != null) {
+            Document doc = rooms.find(eq("pos", positionString)).first();
+            return new RoomRecord(doc.getString("desc"));
+        }
+
+        return null;
     }
 
     @Override
