@@ -45,6 +45,13 @@
                 name="unirest-java"
                 rev="1.4.7"/>
 
+      <!-- Mongo DB JaveDriver   -->
+      <dependency org="org.mongodb"
+                  name="mongo-java-driver"
+                  rev="3.0.4" />
+
   </dependencies>
+
+
 
 </ivy-module>

@@ -1,5 +1,8 @@
 package cloud.cave.server.common;
 
+import java.util.Arrays;
+
+import cloud.cave.common.CaveConfigurationNotSetException;
 import cloud.cave.config.*;
 
 /**
@@ -10,7 +13,7 @@ import cloud.cave.config.*;
  */
 public class ServerConfiguration {
 
-  private ServerData data0;
+  private ServerData[] serverList;
   
   /** Create a server configuration by reading an environment variable.
    * The strategy used to do the actual read is defined by the reader
@@ -22,13 +25,17 @@ public class ServerConfiguration {
    * @param environmentVariable the variable to read as a server
    * configuration, like e.g. SKYCAVE_APPSERVER. 
    */
-  // TODO: LATER - ServerConfiguration only handles a single server, not a cluster
   public ServerConfiguration(EnvironmentReaderStrategy environmentReader, 
       String environmentVariable) {
     String asString = Config.failFastRead(environmentReader, environmentVariable);
     
-    String[] tokens = asString.split(":");
-    data0 = new StandardServerData(tokens[0], Integer.parseInt(tokens[1]));
+    String[] parts = asString.split(",");
+    serverList = new ServerData[parts.length];
+    
+    for (int i=0; i < parts.length; i++) {
+      String[] tokens = parts[i].split(":");
+      serverList[i] = new StandardServerData(tokens[0], Integer.parseInt(tokens[1]));
+    }
   }
   
   /**
@@ -41,19 +48,25 @@ public class ServerConfiguration {
    *          the port number of the server/service
    */
   public ServerConfiguration(String ip, int port) {
-    data0 = new StandardServerData(ip, port);
+    serverList = new ServerData[1];
+    serverList[0] = new StandardServerData(ip, port);
   }
 
   public ServerData get(int index) {
-    if ( index > 0 ) { throw new RuntimeException("ServerConfiguration: get not implemented in detail yet"); }
-    return data0;
+    if ( index > serverList.length ) { throw new CaveConfigurationNotSetException("ServerConfiguration: Index error, only "+serverList.length+
+        " server addresses in configuration, you asked for index "+index); }
+    return serverList[index];
+  }
+  
+  public int size() {
+    return serverList.length;
   }
 
   @Override
   public String toString() {
-    return "ServerConfiguration [serverData=" + data0 + "]";
+    return "ServerConfiguration [serverList=" + Arrays.toString(serverList) + "]";
   }
-  
+
 }
 
 class StandardServerData implements ServerData {
