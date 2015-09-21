@@ -154,6 +154,13 @@ public class MongoStorage implements CaveStorage {
         players = db.getCollection("players");
         messages = db.getCollection("messages");
 
+        //Creates init rooms if not there
+        this.addRoom(new Point3(0, 0, 0).getPositionString(), new RoomRecord("You are standing at the end of a road before a small brick building."));
+        this.addRoom(new Point3(0, 1, 0).getPositionString(), new RoomRecord("You are in open forest, with a deep valley to one side."));
+        this.addRoom(new Point3(1, 0, 0).getPositionString(), new RoomRecord("You are inside a building, a well house for a large spring."));
+        this.addRoom(new Point3(-1, 0, 0).getPositionString(), new RoomRecord("You have walked up a hill, still in the forest."));
+        this.addRoom(new Point3(0, 0, 1).getPositionString(), new RoomRecord("You are in the top of a tall tree, at the end of a road."));
+
     }
 
     @Override
