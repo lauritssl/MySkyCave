@@ -149,7 +149,7 @@ public class MongoStorage implements CaveStorage {
     public void initialize(ServerConfiguration config) {
         this.configuration = config;
 
-        ServerAddress[] mongoServers = {};
+        ServerAddress[] mongoServers = new ServerAddress[config.size()];
 
         for (int i = 0; i < config.size(); i++) {
             mongoServers[i] = new ServerAddress(config.get(i).getHostName(), config.get(i).getPortNumber());
