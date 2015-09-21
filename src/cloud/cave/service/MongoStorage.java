@@ -148,14 +148,13 @@ public class MongoStorage implements CaveStorage {
     public void initialize(ServerConfiguration config) {
         this.configuration = config;
 
+        List<ServerAddress> mongoServers = new ArrayList<>();
+
         for (int i = 0; i < config.size(); i++) {
-            try {
-                mongo = new MongoClient(config.get(i).getHostName(), config.get(i).getPortNumber());
-                break;
-            } catch (Exception e) {
-                System.out.println("Mongo not primary, trying different server...");
-            }
+            mongoServers.add(new ServerAddress(config.get(i).getHostName(), config.get(i).getPortNumber()));
         }
+
+        mongo = new MongoClient(mongoServers);
 
         db = mongo.getDatabase("cave");
         rooms = db.getCollection("rooms");
