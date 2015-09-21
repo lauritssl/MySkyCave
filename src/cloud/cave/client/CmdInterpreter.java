@@ -63,8 +63,8 @@ public class CmdInterpreter {
     if (!success) {
       if(loginResult.getResultCode() == LoginResult.SUBSCRIPTION_SERVICE_NOT_RESPONDING){
         //Keep trying if timed out (will be stopped by circuit-breaker and degrade gracefully)
-        systemOut.println("*** Subscription service is not responding, attempting again...");
-        return attemptLogin(loginName, pwd);
+        systemOut.println("*** Subscription service is not responding, try again later...");
+        System.exit(-1);
       } else {
         systemOut.println("*** SORRY! The login failed. Reason: "
                 + loginResult.getResultCode());

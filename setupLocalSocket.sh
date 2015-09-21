@@ -10,8 +10,8 @@ export SKYCAVE_APPSERVER=localhost:37123
 # === Inject test doubles for all delegates (Note IP endpoints are dummies)
 
 # = Subscription service 
-#export SKYCAVE_SUBSCRIPTION_IMPLEMENTATION=cloud.cave.service.CircuitBreakerSubscriptionService
-export SKYCAVE_SUBSCRIPTION_IMPLEMENTATION=cloud.cave.doubles.SaboteurSubscriptionService
+export SKYCAVE_SUBSCRIPTION_IMPLEMENTATION=cloud.cave.service.CircuitBreakerSubscriptionService
+#export SKYCAVE_SUBSCRIPTION_IMPLEMENTATION=cloud.cave.doubles.SaboteurSubscriptionService
 export SKYCAVE_SUBSCRIPTIONSERVER=cavereg.baerbak.com:4567
 
 # = Cave storage
@@ -19,6 +19,6 @@ export SKYCAVE_CAVESTORAGE_IMPLEMENTATION=cloud.cave.doubles.FakeCaveStorage
 export SKYCAVE_DBSERVER=localhost:27017
 
 # = Weather service
-#export SKYCAVE_WEATHER_IMPLEMENTATION=cloud.cave.service.StandardWeatherService
-export SKYCAVE_WEATHER_IMPLEMENTATION=cloud.cave.doubles.SaboteurWeatherService
+export SKYCAVE_WEATHER_IMPLEMENTATION=cloud.cave.service.CircuitBreakerWeatherService
+#export SKYCAVE_WEATHER_IMPLEMENTATION=cloud.cave.doubles.SaboteurWeatherService
 export SKYCAVE_WEATHERSERVER=caveweather.baerbak.com:8182
