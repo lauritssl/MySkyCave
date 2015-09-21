@@ -10,6 +10,7 @@ import com.mongodb.client.MongoDatabase;
 import org.bson.Document;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static com.mongodb.client.model.Filters.*;
@@ -148,13 +149,13 @@ public class MongoStorage implements CaveStorage {
     public void initialize(ServerConfiguration config) {
         this.configuration = config;
 
-        List<ServerAddress> mongoServers = new ArrayList<>();
+        ServerAddress[] mongoServers = {};
 
         for (int i = 0; i < config.size(); i++) {
-            mongoServers.add(new ServerAddress(config.get(i).getHostName(), config.get(i).getPortNumber()));
+            mongoServers[i] = new ServerAddress(config.get(i).getHostName(), config.get(i).getPortNumber());
         }
 
-        mongo = new MongoClient(mongoServers);
+        mongo = new MongoClient(Arrays.asList(mongoServers));
 
         db = mongo.getDatabase("cave");
         rooms = db.getCollection("rooms");
