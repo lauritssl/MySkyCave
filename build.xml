@@ -315,5 +315,14 @@ SkyCave starter kit for the "Cloud Computing and Architecture" course.
 
   </target>
 
+  <!-- load.mongo is used to generate load on the storage tier -->
+  <target name="load.mongo"
+          depends="build.all"
+          description="--> * Execute the storage tier load generator">
+    <java classpathref="run.path.id"
+          classname="cloud.cave.manual.LoadGenerateStorageWrite">
+    </java>
+  </target>
+
 
 </project>
