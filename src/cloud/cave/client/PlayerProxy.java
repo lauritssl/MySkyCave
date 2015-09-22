@@ -228,7 +228,7 @@ public class PlayerProxy implements Player {
       throw new PlayerSessionExpiredException(errMsg);
     }
 
-    if (statusCode.equals(StatusCode.SERVER_WEATHER_SERVICE_TIMEOUT)){
+    if (statusCode.equals(StatusCode.SERVER_SERVICE_TIMEOUT)){
       String errMsg = replyJson.get(MarshalingKeys.ERROR_MSG_KEY).toString();
       throw new CaveTimeOutException(errMsg);
     }

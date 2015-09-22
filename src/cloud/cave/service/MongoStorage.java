@@ -16,7 +16,7 @@ import java.util.List;
 import static com.mongodb.client.model.Filters.*;
 
 /**
- * Created by lalan on 15/09/15.
+ * Created by Soren and Laurits on 15/09/15.
  */
 public class MongoStorage implements CaveStorage {
     private MongoClient mongo;
@@ -34,7 +34,7 @@ public class MongoStorage implements CaveStorage {
 
         return null;
     }
-
+    
     @Override
     public boolean addRoom(String positionString, RoomRecord description) {
         if(rooms.find(eq("pos", positionString)).first() == null){
