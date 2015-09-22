@@ -18,14 +18,18 @@ public class FailsafeMongoStorage implements CaveStorage {
 
     @Override
     public RoomRecord getRoom(String positionString) {
-        return mongo.getRoom(positionString);
+        try {
+            return mongo.getRoom(positionString);
+        } catch (MongoException e){
+            throw new CaveTimeOutException("DB_TIMEOUT_EXCEPTION", e);
+        }
     }
 
     @Override
     public boolean addRoom(String positionString, RoomRecord description) {
         try {
             return mongo.addRoom(positionString, description);
-        }catch (MongoException e){
+        } catch (MongoException e){
             throw new CaveTimeOutException("DB_TIMEOUT_EXCEPTION", e);
         }
     }
