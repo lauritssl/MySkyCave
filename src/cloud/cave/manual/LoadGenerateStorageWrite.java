@@ -45,8 +45,8 @@ public class LoadGenerateStorageWrite {
         for (int i = 0; i < max; i++) {
             if (i%100 == 0) { System.out.print("."); }
             if (i%1000 == 0) { System.out.println(); }
-            String roomDescription = "This is room no. "+i;
             try {
+                String roomDescription = "This is room no. "+i;
                 wentOk = player.digRoom(Direction.DOWN, roomDescription);
                 if (!wentOk) {
                     System.out.println("ERROR: The cave is not empty, failed on digging room at position: " + player.getPosition());
@@ -54,7 +54,7 @@ public class LoadGenerateStorageWrite {
                 }
                 // move down then
                 player.move(Direction.DOWN);
-            } catch (CaveTimeOutException e){
+            } catch (Exception e){
                 System.out.println("ERROR: Mongodb timed out, attempting again...");
                 i--;
             }
