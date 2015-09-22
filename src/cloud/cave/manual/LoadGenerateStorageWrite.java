@@ -54,7 +54,7 @@ public class LoadGenerateStorageWrite {
                 }
                 // move down then
                 player.move(Direction.DOWN);
-            } catch (Exception e){
+            } catch (CaveTimeOutException e){
                 System.out.println("ERROR: Mongodb timed out, attempting again...");
                 i--;
             }
