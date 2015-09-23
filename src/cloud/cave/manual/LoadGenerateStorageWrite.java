@@ -2,6 +2,7 @@ package cloud.cave.manual;
 
 import cloud.cave.config.*;
 import cloud.cave.domain.*;
+import cloud.cave.ipc.CaveTimeOutException;
 import cloud.cave.server.*;
 
 /**
@@ -44,14 +45,19 @@ public class LoadGenerateStorageWrite {
         for (int i = 0; i < max; i++) {
             if (i%100 == 0) { System.out.print("."); }
             if (i%1000 == 0) { System.out.println(); }
-            String roomDescription = "This is room no. "+i;
-            wentOk = player.digRoom(Direction.DOWN, roomDescription);
-            if ( ! wentOk ) {
-                System.out.println("ERROR: The cave is not empty, failed on digging room at position: "+player.getPosition());
-                System.exit(-1); // Fail fast...
+            try {
+                String roomDescription = "This is room no. "+i;
+                wentOk = player.digRoom(Direction.DOWN, roomDescription);
+                if (!wentOk) {
+                    System.out.println("ERROR: The cave is not empty, failed on digging room at position: " + player.getPosition());
+                    System.exit(-1); // Fail fast...
+                }
+                // move down then
+                player.move(Direction.DOWN);
+            } catch (CaveTimeOutException e){
+                System.out.println("ERROR: Mongodb timed out, attempting again...");
+                i--;
             }
-            // move down then
-            player.move(Direction.DOWN);
         }
         System.out.println();
         System.out.println("*** Done. Remember to erase DB manually before attempting a new run. ***");
