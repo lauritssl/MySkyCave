@@ -26,7 +26,7 @@ public class StandardServerCave implements Cave {
   private CaveStorage storage;
   private SubscriptionService subscriptionService;
   private WeatherService weatherService;
-  private PlayerSessionCache sessionCache;
+  private StatelessSessionCache sessionCache;
   private HashMap<String, KnownUser> knownUsers;
 
   private Logger logger;
@@ -40,7 +40,7 @@ public class StandardServerCave implements Cave {
     weatherService = factory.createWeatherServiceConnector();
     
     // TODO Currently the session cache strategy is not injected
-    sessionCache = new SimpleInMemoryCache();
+    sessionCache = new StatelessSessionCache(storage, weatherService, sessionCache);
 
     logger = LoggerFactory.getLogger(StandardServerCave.class);
 

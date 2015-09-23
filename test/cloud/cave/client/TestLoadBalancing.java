@@ -6,49 +6,62 @@ import static org.hamcrest.CoreMatchers.*;
 import org.json.simple.JSONObject;
 import org.junit.*;
 
-import cloud.cave.common.CommonCaveTests;
+import cloud.cave.config.CaveServerFactory;
 import cloud.cave.domain.*;
+import cloud.cave.doubles.*;
 import cloud.cave.ipc.*;
-import cloud.cave.server.StandardInvoker;
+import cloud.cave.server.*;
 import cloud.cave.server.common.ServerConfiguration;
+import cloud.cave.service.*;
 
 /**
  * Test scalability of servers, what happens when a request hits a server that
  * has never handled any previous requests from the player before, because
- * the session was initialized on some other (load balanced) server
+ * the session was initialized on some other (load balanced) server.
  * <p>
  * To scale from one server to several handling load, each server has to be
  * stateless, or rather handle session state in some well defined manner
  * across the entire server cluster.
- * 
+ *
  * @author Henrik Baerbak Christensen, Aarhus University.
- * 
+ *
  */
 public class TestLoadBalancing {
-  
+
+
   private Player player;
   private LoadBalancedLocalMethodCallClientRequestHandler crh;
   private CaveProxy caveProxy;
 
   @Before
   public void setup() {
+    // In a multi server scenario that facilitate testing a
+    // 'Session Database' handling of session data, we of course
+    // must have two servers that access the same underlying
+    // storage system. Thus we create one FakeStorage, and
+    // let the two servers both share that.
+    CaveStorage storage = new FakeCaveStorage();
+    storage.initialize(null);
+
     // In a multi server scenario, each server creates its own
-    // cave during initialization; we mimic the multi server
+    // cave object during initialization; we mimic the multi server
     // configuration by creating two caves, assigned to different
-    // servers
-    Cave caveServer1 = CommonCaveTests.createTestDoubledConfiguredCave();
-    Cave caveServer2 = CommonCaveTests.createTestDoubledConfiguredCave();
+    // servers but with the same underlying storage
+    CaveServerFactory factory = new FactoryWithSharedStorage(storage);
+
+    Cave caveServer1 = new StandardServerCave(factory);
+    Cave caveServer2 = new StandardServerCave(factory);
 
     // Create the server side invokers
     Invoker srh1 = new StandardInvoker(caveServer1);
     Invoker srh2 = new StandardInvoker(caveServer2);
-    
+
     // and here comes the trick; we create a client side
     // requester that takes the two server invokers as parameters, and
     // provides a method for setting which one the
     // next requests will be forwarded to.
     crh = new LoadBalancedLocalMethodCallClientRequestHandler(srh1,srh2);
-    
+
     // Create the cave proxy, and login mikkel; server communication
     // will be made with server 1 as this is the default for the
     // load balancing requester.
@@ -64,13 +77,13 @@ public class TestLoadBalancing {
     assertThat(crh.toString(), containsString("server 1"));
     // Verify that method calls runs smoothly to the server
     assertThat(player.getLongRoomDescription(), containsString("[0] Mikkel"));
-    
+
     // now we simulate that the next request will be forwarded to server 2
     // by the load balancing of the SkyCave system
     crh.setWhichServerToUse(2);
     // Verify that requests are forwarded to server 2
     assertThat(crh.toString(), containsString("server 2"));
-    
+
     // Verify that the shit hits the fan now!
     try {
       String d = player.getLongRoomDescription();
@@ -80,29 +93,68 @@ public class TestLoadBalancing {
       // must be available across all servers. This is 
       // future exercise. Enable the fail below once this
       // is implemented.
-      // fail("The server is statefull which disallows scaling!");
+      fail("The server is statefull which disallows scaling!");
     }
+  }
+}
+
+/** A factory that creates test doubles but in case of the
+ * storage, returns the SAME storage to allow different caves
+ * access to the same underlying storage.
+ *
+ * @author Henrik Baerbak Christensen, Aarhus University.
+ *
+ */
+class FactoryWithSharedStorage implements CaveServerFactory {
+
+  private CaveStorage storage;
+
+  public FactoryWithSharedStorage(CaveStorage storage) {
+    this.storage = storage;
+  }
+
+  @Override
+  public CaveStorage createCaveStorage() {
+    // Return the SAME for both caves
+    return storage;
+  }
+
+  @Override
+  public SubscriptionService createSubscriptionServiceConnector() {
+    return new TestStubSubscriptionService();
+  }
+
+  @Override
+  public WeatherService createWeatherServiceConnector() {
+    return new TestStubWeatherService();
+  }
+
+  @Override
+  public Reactor createReactor(Invoker invoker) {
+    // Not used...
+    return null;
   }
 
 }
+
 
 /**
  * A test double request handler which simulates load balancing
  * requests over two servers, by allowing to choose which
  * of two request handlers to forward the next requests to.
- * 
+ *
  * @author Henrik Baerbak Christensen, Aarhus University.
  *
  */
 class LoadBalancedLocalMethodCallClientRequestHandler implements ClientRequestHandler {
   private Invoker requesterServer1;
   private Invoker requesterServer2;
-  
+
   private int whichOne;
-  
+
 
   public LoadBalancedLocalMethodCallClientRequestHandler(
-      Invoker srh1, Invoker srh2) {
+          Invoker srh1, Invoker srh2) {
     this.requesterServer1 = srh1;
     this.requesterServer2 = srh2;
     this.whichOne = 1;
@@ -112,13 +164,13 @@ class LoadBalancedLocalMethodCallClientRequestHandler implements ClientRequestHa
     assert no == 1 || no == 2;
     whichOne = no;
   }
-  
+
   @Override
   public void initialize(ServerConfiguration config) {
     // Not relevant, as this request handler is only used in
     // testing and under programmatic control
   }
-  
+
   @Override
   public JSONObject sendRequestAndBlockUntilReply(JSONObject requestJson) {
     Invoker requestHandler = null;
@@ -134,4 +186,3 @@ class LoadBalancedLocalMethodCallClientRequestHandler implements ClientRequestHa
     return "LoadBalancedLocalMethodCallClientRequestHandler, dispatching to server "+whichOne;
   }
 }
-
