@@ -3,7 +3,7 @@ export SKYCAVE_CLIENTREQUESTHANDLER_IMPLEMENTATION=cloud.cave.ipc.MQClientReques
 export SKYCAVE_REACTOR_IMPLEMENTATION=cloud.cave.ipc.MQReactor
 
 # === Configure for server to run on localhost
-export SKYCAVE_APPSERVER=172.17.0.2:5672
+export SKYCAVE_APPSERVER=lundtoft.local:5672
 
 # === Inject test doubles for all delegates (Note IP endpoints are dummies)
 

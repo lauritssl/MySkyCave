@@ -40,7 +40,10 @@ public class MQReactor implements Reactor{
             con = factory.newConnection();
             channel = con.createChannel();
 
+
+            channel.exchangeDeclare(RabbitMQConfig.RPC_EXCHANGE_NAME, "direct");
             channel.queueDeclare(RabbitMQConfig.RPC_QUEUE_NAME, false, false, false, null);
+            channel.queueBind(RabbitMQConfig.RPC_QUEUE_NAME, RabbitMQConfig.RPC_EXCHANGE_NAME, RabbitMQConfig.RPC_QUEUE_NAME);
             channel.basicQos(1);
 
             consumer = new QueueingConsumer(channel);
@@ -83,10 +86,11 @@ public class MQReactor implements Reactor{
                 try {
                     response = (JSONObject) parser.parse(new String(delivery.getBody(), "UTF-8"));
                     System.out.println("--> AcceptED!");
+                    LocalDateTime dateTime = LocalDateTime.now(); //Timestamp updated after reply
+                    System.out.println("["+ dateTime.toString() +"] --> Received " + response.toString()); //Timestamp added to output
 
                     reply = invoker.handleRequest(response);
-                    LocalDateTime dateTime = LocalDateTime.now(); //Timestamp updated after reply
-                    System.out.println("["+ dateTime.toString() +"] --< replied: " + reply); //Timestamp added to output
+
 
 
                 }catch (ParseException e) {
@@ -98,13 +102,16 @@ public class MQReactor implements Reactor{
                 } catch (UnsupportedEncodingException e) {
                     e.printStackTrace();
                 }finally {
-                    channel.basicPublish("", prop.getReplyTo(), replayProbs, reply.toString().getBytes("UTF-8"));
+                    LocalDateTime dateTime = LocalDateTime.now(); //Timestamp updated after reply
+                    System.out.println("[" + dateTime.toString() + "] --< replied: " + reply); //Timestamp added to output
+
+                    channel.basicPublish(RabbitMQConfig.RPC_EXCHANGE_NAME, prop.getReplyTo(), replayProbs, reply.toString().getBytes("UTF-8"));
                     channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
                 }
-                System.out.println(reply.toString());
 
             } catch (Exception e) {
                 e.printStackTrace();
+                break;
             }
         }
 

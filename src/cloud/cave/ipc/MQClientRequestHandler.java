@@ -36,11 +36,12 @@ public class MQClientRequestHandler implements ClientRequestHandler{
 
         try {
 
-            channel.basicPublish("", RabbitMQConfig.RPC_QUEUE_NAME, props, requestJson.toString().getBytes());
+            channel.basicPublish(RabbitMQConfig.RPC_EXCHANGE_NAME, RabbitMQConfig.RPC_QUEUE_NAME, props, requestJson.toString().getBytes());
+
+
             while (true){
                 QueueingConsumer.Delivery delivery = consumer.nextDelivery();
                 if(delivery.getProperties().getCorrelationId().equals(corrID)){
-
                     JSONParser parser = new JSONParser();
                     response = (JSONObject) parser.parse(new String(delivery.getBody(), "UTF-8"));
                     break;
@@ -67,9 +68,18 @@ public class MQClientRequestHandler implements ClientRequestHandler{
             con = factory.newConnection();
             channel = con.createChannel();
 
+            channel.exchangeDeclare(RabbitMQConfig.RPC_EXCHANGE_NAME, "direct");
+            channel.queueDeclare(RabbitMQConfig.RPC_QUEUE_NAME, false, false, false, null);
+
             replyQueueName = channel.queueDeclare().getQueue();
+
+            channel.queueBind(RabbitMQConfig.RPC_QUEUE_NAME, RabbitMQConfig.RPC_EXCHANGE_NAME, RabbitMQConfig.RPC_QUEUE_NAME);
+            channel.queueBind(replyQueueName, RabbitMQConfig.RPC_EXCHANGE_NAME, replyQueueName);
+
             consumer = new QueueingConsumer(channel);
             channel.basicConsume(replyQueueName, true, consumer);
+
+
 
         } catch (IOException e) {
             e.printStackTrace();

@@ -1,11 +1,11 @@
 cd /root/cave
 
 # === Configure for socket communication on client and app server side
-export SKYCAVE_CLIENTREQUESTHANDLER_IMPLEMENTATION=cloud.cave.config.socket.SocketClientRequestHandler
-export SKYCAVE_REACTOR_IMPLEMENTATION=cloud.cave.config.socket.SocketReactor
+export SKYCAVE_CLIENTREQUESTHANDLER_IMPLEMENTATION=cloud.cave.ipc.MQClientRequestHandler
+export SKYCAVE_REACTOR_IMPLEMENTATION=cloud.cave.ipc.MQReactor
 
 # === Configure for server to run on localhost
-export SKYCAVE_APPSERVER=172.17.0.2:5672
+export SKYCAVE_APPSERVER=$MQ0_PORT_5672_TCP_ADDR:5672
 
 # === Inject test doubles for all delegates (Note IP endpoints are dummies)
 
