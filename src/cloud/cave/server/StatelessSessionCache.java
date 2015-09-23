@@ -33,7 +33,8 @@ public class StatelessSessionCache implements PlayerSessionCache {
         this.playerSessionCache = playerSessionCache;
 
         String hostName = storage.getConfiguration().get(0).getHostName();
-        MongoClient mongo = new MongoClient("172.17.0.8", 27017);
+        int port = storage.getConfiguration().get(0).getPortNumber();
+        MongoClient mongo = new MongoClient(hostName, port);
         MongoDatabase db = mongo.getDatabase("cave");
         cache = db.getCollection("cache");
     }
