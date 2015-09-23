@@ -50,6 +50,11 @@
                   name="mongo-java-driver"
                   rev="3.0.4" />
 
+      <!-- RabbitMQ Client -->
+      <dependency org="com.rabbitmq"
+                  name="amqp-client"
+                  rev="3.5.4"/>
+
   </dependencies>
 
 
