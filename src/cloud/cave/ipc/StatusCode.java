@@ -18,4 +18,5 @@ public class StatusCode {
   public static final String SERVER_UNKNOWN_METHOD_FAILURE = "SERVER_UNKNOWN_METHOD_FAILURE";
   public static final String SERVER_PLAYER_SESSION_EXPIRED_FAILURE = "SERVER_PLAYER_SESSION_EXPIRED_FAILURE";
   public static final String SERVER_SERVICE_TIMEOUT = "SERVER_SERVICE_TIMEOUT";
+  public static final String DATABASE_ERROR = "DATABASE_ERROR";
 }

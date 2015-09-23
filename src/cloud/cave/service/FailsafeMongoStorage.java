@@ -1,6 +1,7 @@
 package cloud.cave.service;
 
 import cloud.cave.domain.Direction;
+import cloud.cave.ipc.CaveStorageException;
 import cloud.cave.ipc.CaveTimeOutException;
 import cloud.cave.server.common.PlayerRecord;
 import cloud.cave.server.common.RoomRecord;
@@ -21,7 +22,7 @@ public class FailsafeMongoStorage implements CaveStorage {
         try {
             return mongo.getRoom(positionString);
         } catch (MongoException e){
-            throw new CaveTimeOutException("DB_TIMEOUT_EXCEPTION", e);
+            throw new CaveStorageException("DB_TIMEOUT_EXCEPTION", e);
         }
     }
 
@@ -30,7 +31,7 @@ public class FailsafeMongoStorage implements CaveStorage {
         try {
             return mongo.addRoom(positionString, description);
         } catch (MongoException e){
-            throw new CaveTimeOutException("DB_TIMEOUT_EXCEPTION", e);
+            throw new CaveStorageException("DB_TIMEOUT_EXCEPTION", e);
         }
     }
 
@@ -39,7 +40,7 @@ public class FailsafeMongoStorage implements CaveStorage {
         try {
             mongo.addMessage(positionString, message);
         }catch (MongoException e){
-            throw new CaveTimeOutException("DB_TIMEOUT_EXCEPTION", e);
+            throw new CaveStorageException("DB_TIMEOUT_EXCEPTION", e);
         }
     }
 
@@ -48,7 +49,7 @@ public class FailsafeMongoStorage implements CaveStorage {
         try {
             return mongo.getMessageList(positionString);
         } catch (MongoException e){
-            throw new CaveTimeOutException("DB_TIMEOUT_EXCEPTION", e);
+            throw new CaveStorageException("DB_TIMEOUT_EXCEPTION", e);
         }
     }
 
@@ -57,7 +58,7 @@ public class FailsafeMongoStorage implements CaveStorage {
         try {
             return mongo.getSetOfExitsFromRoom(positionString);
         } catch (MongoException e){
-            throw new CaveTimeOutException("DB_TIMEOUT_EXCEPTION", e);
+            throw new CaveStorageException("DB_TIMEOUT_EXCEPTION", e);
         }
     }
 
@@ -66,7 +67,7 @@ public class FailsafeMongoStorage implements CaveStorage {
         try {
             return mongo.getPlayerByID(playerID);
         } catch (MongoException e){
-            throw new CaveTimeOutException("DB_TIMEOUT_EXCEPTION", e);
+            throw new CaveStorageException("DB_TIMEOUT_EXCEPTION", e);
         }
     }
 
@@ -75,7 +76,7 @@ public class FailsafeMongoStorage implements CaveStorage {
         try {
             mongo.updatePlayerRecord(record);
         } catch (MongoException e){
-            throw new CaveTimeOutException("DB_TIMEOUT_EXCEPTION", e);
+            throw new CaveStorageException("DB_TIMEOUT_EXCEPTION", e);
         }
     }
 
@@ -84,7 +85,7 @@ public class FailsafeMongoStorage implements CaveStorage {
         try{
             return mongo.computeListOfPlayersAt(positionString, from, to);
         } catch (MongoException e){
-            throw new CaveTimeOutException("DB_TIMEOUT_EXCEPTION", e);
+            throw new CaveStorageException("DB_TIMEOUT_EXCEPTION", e);
         }
     }
 
@@ -93,7 +94,7 @@ public class FailsafeMongoStorage implements CaveStorage {
         try {
             return mongo.computeCountOfActivePlayers();
         } catch (MongoException e){
-            throw new CaveTimeOutException("DB_TIMEOUT_EXCEPTION", e);
+            throw new CaveStorageException("DB_TIMEOUT_EXCEPTION", e);
         }
     }
 
@@ -103,7 +104,7 @@ public class FailsafeMongoStorage implements CaveStorage {
             mongo = new MongoStorage();
             mongo.initialize(config);
         } catch (MongoException e){
-            throw new CaveTimeOutException("DB_TIMEOUT_EXCEPTION", e);
+            throw new CaveStorageException("DB_TIMEOUT_EXCEPTION", e);
         }
     }
 
@@ -112,7 +113,7 @@ public class FailsafeMongoStorage implements CaveStorage {
         try {
             mongo.disconnect();
         } catch (MongoException e){
-            throw new CaveTimeOutException("DB_TIMEOUT_EXCEPTION", e);
+            throw new CaveStorageException("DB_TIMEOUT_EXCEPTION", e);
         }
     }
 
@@ -121,7 +122,7 @@ public class FailsafeMongoStorage implements CaveStorage {
         try {
             return mongo.getConfiguration();
         } catch (MongoException e){
-            throw new CaveTimeOutException("DB_TIMEOUT_EXCEPTION", e);
+            throw new CaveStorageException("DB_TIMEOUT_EXCEPTION", e);
         }
     }
 }

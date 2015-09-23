@@ -152,7 +152,9 @@ public class PlayerDispatcher implements Dispatcher {
       reply = Marshaling.createInvalidReplyWithExplantion(StatusCode.SERVER_PLAYER_SESSION_EXPIRED_FAILURE, exc.getMessage());
     } catch (CaveTimeOutException exc){
       reply = Marshaling.createInvalidReplyWithExplantion(StatusCode.SERVER_SERVICE_TIMEOUT, exc.getMessage());
-    } catch (ParseException e) {
+    } catch (CaveStorageException exc) {
+      reply = Marshaling.createInvalidReplyWithExplantion(StatusCode.DATABASE_ERROR, exc.getMessage());
+    }  catch (ParseException e) {
       e.printStackTrace();
     }
     return reply;

@@ -4,6 +4,7 @@ import java.io.*;
 import java.util.List;
 
 import cloud.cave.ipc.CaveIPCException;
+import cloud.cave.ipc.CaveStorageException;
 import cloud.cave.ipc.CaveTimeOutException;
 import org.json.simple.JSONObject;
 
@@ -126,6 +127,8 @@ public class CmdInterpreter {
                 systemOut.println("*** Sorry - weather information is not available ***");
             }
 
+          } catch (CaveStorageException e) {
+            systemOut.println("*** Sorry - Database is not available, try agian ***");
           } catch (CaveIPCException e){
             systemOut.println("*** Sorry - I cannot do that as I am disconnected from the cave, please quit ***");
           }

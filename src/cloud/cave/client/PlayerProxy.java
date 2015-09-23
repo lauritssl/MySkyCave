@@ -233,6 +233,11 @@ public class PlayerProxy implements Player {
       throw new CaveTimeOutException(errMsg);
     }
 
+    if (statusCode.equals(StatusCode.DATABASE_ERROR)){
+      String errMsg = replyJson.get(MarshalingKeys.ERROR_MSG_KEY).toString();
+      throw new CaveStorageException(errMsg);
+    }
+
     return replyJson;
   }
 }
