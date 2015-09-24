@@ -182,4 +182,19 @@ class SpyCaveStorage implements CaveStorage {
     return decoratee.computeCountOfActivePlayers();
   }
 
+  @Override
+  public String sessionGet(String playerID) {
+    return decoratee.sessionGet(playerID);
+  }
+
+  @Override
+  public void sessionAdd(String playerID, Player player) {
+    decoratee.sessionAdd(playerID, player);
+  }
+
+  @Override
+  public void sessionRemove(String playerID) {
+    decoratee.sessionRemove(playerID);
+  }
+
 }

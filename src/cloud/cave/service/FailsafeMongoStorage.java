@@ -1,6 +1,7 @@
 package cloud.cave.service;
 
 import cloud.cave.domain.Direction;
+import cloud.cave.domain.Player;
 import cloud.cave.ipc.CaveStorageException;
 import cloud.cave.ipc.CaveTimeOutException;
 import cloud.cave.server.common.PlayerRecord;
@@ -93,6 +94,33 @@ public class FailsafeMongoStorage implements CaveStorage {
     public int computeCountOfActivePlayers() {
         try {
             return mongo.computeCountOfActivePlayers();
+        } catch (MongoException e){
+            throw new CaveStorageException("DB_TIMEOUT_EXCEPTION", e);
+        }
+    }
+
+    @Override
+    public String sessionGet(String playerID) {
+        try {
+            return mongo.sessionGet(playerID);
+        } catch (MongoException e){
+            throw new CaveStorageException("DB_TIMEOUT_EXCEPTION", e);
+        }
+    }
+
+    @Override
+    public void sessionAdd(String playerID, Player player) {
+        try {
+            mongo.sessionAdd(playerID, player);
+        } catch (MongoException e){
+            throw new CaveStorageException("DB_TIMEOUT_EXCEPTION", e);
+        }
+    }
+
+    @Override
+    public void sessionRemove(String playerID) {
+        try {
+            mongo.sessionRemove(playerID);
         } catch (MongoException e){
             throw new CaveStorageException("DB_TIMEOUT_EXCEPTION", e);
         }

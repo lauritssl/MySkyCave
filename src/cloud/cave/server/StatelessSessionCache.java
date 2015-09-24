@@ -20,10 +20,10 @@ import java.util.Arrays;
 import static com.mongodb.client.model.Filters.eq;
 
 /**
- * Created by lalan on 23/09/15.
+ * Created by Soren and Laurits on 23/09/15.
  */
 public class StatelessSessionCache implements PlayerSessionCache {
-    private final MongoCollection<Document> cache;
+    private MongoCollection<Document> cache;
     private final CaveStorage storage;
     private final WeatherService weatherService;
     private final PlayerSessionCache playerSessionCache;
@@ -32,6 +32,7 @@ public class StatelessSessionCache implements PlayerSessionCache {
         this.storage = storage;
         this.weatherService = weatherService;
         this.playerSessionCache = playerSessionCache;
+<<<<<<< Updated upstream
 
         ServerConfiguration config = storage.getConfiguration();
 
@@ -44,11 +45,15 @@ public class StatelessSessionCache implements PlayerSessionCache {
         MongoClient mongo = new MongoClient(Arrays.asList(mongoServers));
         MongoDatabase db = mongo.getDatabase("cave");
         cache = db.getCollection("cache");
+=======
+>>>>>>> Stashed changes
     }
 
     @Override
     public Player get(String playerID) {
-        if(cache.find(eq("playerID", playerID)).first() != null){
+        String pID = storage.sessionGet(playerID);
+
+        if(pID != null){
            return new StandardServerPlayer(playerID, storage, weatherService, playerSessionCache);
         }
         return null;
@@ -56,18 +61,12 @@ public class StatelessSessionCache implements PlayerSessionCache {
 
     @Override
     public void add(String playerID, Player player) {
-        Document p = new Document("playerID", playerID);
-        if(cache.find(eq("playerID", playerID)).first() != null){
-            cache.updateOne(eq("playerID", playerID), new Document("$set", p));
-        }else{
-            cache.insertOne(p);
-        }
+        storage.sessionAdd(playerID, player);
     }
 
     @Override
     public void remove(String playerID) {
-        if(cache.find(eq("playerID", playerID)).first() != null){
-            cache.deleteOne(eq("playerID", playerID));
-        }
+        storage.sessionRemove(playerID);
     }
+
 }

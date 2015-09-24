@@ -104,4 +104,11 @@ public interface CaveStorage extends ExternalService {
    * @return the number of active players in the cave
    */
   int computeCountOfActivePlayers();
+
+  String sessionGet(String playerID);
+
+  void sessionAdd(String playerID, Player player);
+
+  void sessionRemove(String playerID);
+
 }

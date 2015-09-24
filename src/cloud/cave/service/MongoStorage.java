@@ -1,7 +1,9 @@
 package cloud.cave.service;
 
 import cloud.cave.domain.Direction;
+import cloud.cave.domain.Player;
 import cloud.cave.domain.Region;
+import cloud.cave.server.StandardServerPlayer;
 import cloud.cave.server.common.*;
 import com.mongodb.*;
 import com.mongodb.client.MongoCollection;
@@ -21,7 +23,7 @@ import static com.mongodb.client.model.Filters.*;
 public class MongoStorage implements CaveStorage {
     private MongoClient mongo;
     private MongoDatabase db;
-    private MongoCollection<Document> rooms, players, messages;
+    private MongoCollection<Document> rooms, players, messages, cache;
     private ServerConfiguration configuration;
 
     @Override
@@ -146,6 +148,31 @@ public class MongoStorage implements CaveStorage {
     }
 
     @Override
+    public String sessionGet(String playerID) {
+        if(cache.find(eq("playerID", playerID)).first() != null){
+            return playerID;
+        }
+        return null;
+    }
+
+    @Override
+    public void sessionAdd(String playerID, Player player) {
+        Document p = new Document("playerID", playerID);
+        if(cache.find(eq("playerID", playerID)).first() != null){
+            cache.updateOne(eq("playerID", playerID), new Document("$set", p));
+        }else{
+            cache.insertOne(p);
+        }
+    }
+
+    @Override
+    public void sessionRemove(String playerID) {
+        if(cache.find(eq("playerID", playerID)).first() != null){
+            cache.deleteOne(eq("playerID", playerID));
+        }
+    }
+
+    @Override
     public void initialize(ServerConfiguration config) {
         this.configuration = config;
 
@@ -161,6 +188,7 @@ public class MongoStorage implements CaveStorage {
         rooms = db.getCollection("rooms");
         players = db.getCollection("players");
         messages = db.getCollection("messages");
+        cache = db.getCollection("cache");
 
         //Creates init rooms if not there
         this.addRoom(new Point3(0, 0, 0).getPositionString(), new RoomRecord("You are standing at the end of a road before a small brick building."));

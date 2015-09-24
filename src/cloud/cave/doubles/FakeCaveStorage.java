@@ -24,6 +24,7 @@ public class FakeCaveStorage implements CaveStorage {
   // for a room the rest of the tuple
   Map<String,RoomRecord> roomMap;
   Map<String,List<String>> messageMap;
+  private Map<String,String> cacheOfOnlinePlayer;
 
   @Override
   public void initialize(ServerConfiguration config) {
@@ -31,6 +32,7 @@ public class FakeCaveStorage implements CaveStorage {
     roomMap = new HashMap<String, RoomRecord>();
     messageMap = new HashMap<String, List<String>>();
     playerId2PlayerSpecs = new HashMap<String, PlayerRecord>(5);
+    cacheOfOnlinePlayer = new HashMap<String,String>();
 
     RoomRecord entryRoom = new RoomRecord(
         "You are standing at the end of a road before a small brick building.");
@@ -136,6 +138,22 @@ public class FakeCaveStorage implements CaveStorage {
   @Override
   public int computeCountOfActivePlayers() {
     return getPlayerList().size();
+  }
+
+  @Override
+  public String sessionGet(String playerID) {
+    String p = cacheOfOnlinePlayer.get(playerID);
+    return p;
+  }
+
+  @Override
+  public void sessionAdd(String playerID, Player player) {
+    cacheOfOnlinePlayer.put(playerID, player.getID());
+  }
+
+  @Override
+  public void sessionRemove(String playerID) {
+    cacheOfOnlinePlayer.remove(playerID);
   }
 
   /** Compute the list of players in the cave.
