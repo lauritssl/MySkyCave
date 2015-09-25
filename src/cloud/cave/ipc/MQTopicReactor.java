@@ -106,7 +106,6 @@ public class MQTopicReactor implements Reactor{
                     System.out.println("["+ dateTime.toString() +"] --> Received " + response.toString()); //Timestamp added to output
 
                     reply = invoker.handleRequest(response);
-                    System.out.println("*********** "+reply);
 
                 }catch (ParseException e) {
                     String errorMsg = "JSON Parse error on input = " + response.toString();

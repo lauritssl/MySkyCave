@@ -86,7 +86,7 @@ public class StandardInvoker implements Invoker {
       logger.warn("handleRequest: Unhandled request as the method key "+methodKey +
           " is unknown. Full request="+request.toString());
     }
-
+    System.out.println("***************** "+reply.toString());
     return reply;
   }
 
