@@ -5,7 +5,7 @@ export SKYCAVE_CLIENTREQUESTHANDLER_IMPLEMENTATION=cloud.cave.ipc.MQTopicClientR
 export SKYCAVE_REACTOR_IMPLEMENTATION=cloud.cave.ipc.MQTopicReactor
 
 # === Configure the toppic for the RabbitMQ setup - MUST be set as first agument
-export SKYCAVE_MQ_TOPIC=login
+export SKYCAVE_MQ_TOPIC=$1
 
 # === Configure for server to run on localhost
 export SKYCAVE_APPSERVER=$MQ0_PORT_5672_TCP_ADDR:5672
