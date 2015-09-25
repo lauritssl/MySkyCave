@@ -53,7 +53,7 @@ public class StandardInvoker implements Invoker {
   @Override
   public JSONObject handleRequest(JSONObject request) {
     JSONObject reply = null;  
-    System.out.println(request.toString());
+
     // Extract the common parameters from the request object and assign
     // them names that reflect their meaning
     String playerID = request.get(MarshalingKeys.PLAYER_ID_KEY).toString();
