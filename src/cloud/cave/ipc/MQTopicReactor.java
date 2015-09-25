@@ -115,6 +115,8 @@ public class MQTopicReactor implements Reactor{
                     System.out.println("--< !!! replied: "+reply);
                 } catch (UnsupportedEncodingException e) {
                     e.printStackTrace();
+                }catch (Exception e){
+                    e.printStackTrace();
                 }finally {
                     LocalDateTime dateTime = LocalDateTime.now(); //Timestamp updated after reply
                     System.out.println("[" + dateTime.toString() + "] --< replied: " + reply); //Timestamp added to output
