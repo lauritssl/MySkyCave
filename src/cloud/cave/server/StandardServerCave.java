@@ -40,7 +40,7 @@ public class StandardServerCave implements Cave {
     weatherService = factory.createWeatherServiceConnector();
     
     // TODO Currently the session cache strategy is not injected
-    sessionCache = new StatelessSessionCache(storage, weatherService, sessionCache);
+    sessionCache = new StatelessSessionCache(storage, weatherService);
 
     logger = LoggerFactory.getLogger(StandardServerCave.class);
 

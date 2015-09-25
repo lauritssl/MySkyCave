@@ -116,7 +116,10 @@ public class MQTopicReactor implements Reactor{
                 } catch (UnsupportedEncodingException e) {
                     e.printStackTrace();
                 }catch (Exception e){
-                    e.printStackTrace();
+                    String errorMsg = "Unknown exception on input = " + response.toString();
+                    logger.error(errorMsg, e);
+                    reply = Marshaling.createInvalidReplyWithExplantion(
+                            StatusCode.SERVER_FAILURE, errorMsg);
                 }finally {
                     LocalDateTime dateTime = LocalDateTime.now(); //Timestamp updated after reply
                     System.out.println("[" + dateTime.toString() + "] --< replied: " + reply); //Timestamp added to output

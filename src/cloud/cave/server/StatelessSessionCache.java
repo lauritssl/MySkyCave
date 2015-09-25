@@ -11,12 +11,10 @@ public class StatelessSessionCache implements PlayerSessionCache {
 
     private final CaveStorage storage;
     private final WeatherService weatherService;
-    private final PlayerSessionCache playerSessionCache;
 
-    public StatelessSessionCache(CaveStorage storage, WeatherService weatherService, PlayerSessionCache playerSessionCache){
+    public StatelessSessionCache(CaveStorage storage, WeatherService weatherService){
         this.storage = storage;
         this.weatherService = weatherService;
-        this.playerSessionCache = playerSessionCache;
     }
 
     @Override
@@ -24,7 +22,7 @@ public class StatelessSessionCache implements PlayerSessionCache {
         String pID = storage.sessionGet(playerID);
 
         if(pID != null){
-           return new StandardServerPlayer(playerID, storage, weatherService, playerSessionCache);
+           return new StandardServerPlayer(playerID, storage, weatherService, this);
         }
         return null;
     }
