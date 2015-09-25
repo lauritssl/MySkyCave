@@ -75,7 +75,13 @@ public class Config {
    * the classpath and will be loaded at runtime by the ClientFactory.
    */
   public static final String SKYCAVE_CLIENTREQUESTHANDLER_IMPLEMENTATION = "SKYCAVE_CLIENTREQUESTHANDLER_IMPLEMENTATION";
-  
+
+  /**
+   * Environment variable describing the topic to look for in a RabbitMQ topic
+   * configured server setup. Must be set to AARHUS, AALBORG, ODENSE, COPENHAGEN or login
+   */
+  public static final String SKYCAVE_MQ_TOPIC = "SKYCAVE_MQ_TOPIC";
+
   /**
    * Read an environment variable using the given reader strategy. Fail
    * immediately in case the environment variable is not set.

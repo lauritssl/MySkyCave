@@ -36,6 +36,7 @@ public class PlayerProxy implements Player {
   private String playerID;
   private String playerName;
   private String sessionID;
+  private static PlayerProxy instance;
   
   private JSONObject requestJson;
 
@@ -60,6 +61,7 @@ public class PlayerProxy implements Player {
     this.playerName = playerName;
     this.sessionID = sessionID;
     this.crh = crh;
+    this.instance = this;
   }
 
   @Override
@@ -239,5 +241,13 @@ public class PlayerProxy implements Player {
     }
 
     return replyJson;
+  }
+
+  /**
+   * Get the player instance without instantiating it
+   * @return current PlayerProxy instance
+   */
+  public synchronized static PlayerProxy getInstance(){
+    return instance;
   }
 }
