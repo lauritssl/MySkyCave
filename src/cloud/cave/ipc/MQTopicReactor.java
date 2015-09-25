@@ -54,7 +54,7 @@ public class MQTopicReactor implements Reactor{
             channel.exchangeDeclare(RabbitMQConfig.RPC_EXCHANGE_NAME, "topic");
 
             //Getting topic from environment variable, needs to be set in the start script!
-            String queue = "SKYCAVE_" + Config.SKYCAVE_MQ_TOPIC;
+            String queue = "SKYCAVE_" + Config.SKYCAVE_REACTOR_IMPLEMENTATION;
 
             channel.queueDeclare(queue, false, false, false, null);
             channel.queueBind(queue, RabbitMQConfig.RPC_EXCHANGE_NAME, "cave." + Config.SKYCAVE_MQ_TOPIC);
