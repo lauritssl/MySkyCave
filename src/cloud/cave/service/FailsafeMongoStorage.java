@@ -17,6 +17,7 @@ import java.util.List;
  */
 public class FailsafeMongoStorage implements CaveStorage {
     private CaveStorage mongo;
+    private ServerConfiguration configuration;
 
     @Override
     public RoomRecord getRoom(String positionString) {
@@ -129,6 +130,7 @@ public class FailsafeMongoStorage implements CaveStorage {
     @Override
     public void initialize(ServerConfiguration config) {
         try {
+            configuration = config;
             mongo = new MongoStorage();
             mongo.initialize(config);
         } catch (MongoException e){
@@ -152,5 +154,9 @@ public class FailsafeMongoStorage implements CaveStorage {
         } catch (MongoException e){
             throw new CaveStorageException("DB_TIMEOUT_EXCEPTION", e);
         }
+    }
+
+    public void setStorage(CaveStorage storage){
+        mongo = storage;
     }
 }

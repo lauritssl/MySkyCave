@@ -3,6 +3,7 @@ package cloud.cave.service;
 import cloud.cave.domain.Direction;
 import cloud.cave.domain.Player;
 import cloud.cave.domain.Region;
+import cloud.cave.ipc.CaveStorageException;
 import cloud.cave.server.StandardServerPlayer;
 import cloud.cave.server.common.*;
 import com.mongodb.*;
@@ -175,6 +176,10 @@ public class MongoStorage implements CaveStorage {
     @Override
     public void initialize(ServerConfiguration config) {
         this.configuration = config;
+
+        if(config == null){
+            throw new CaveStorageException("Mongo needs configuration to run");
+        }
 
         ServerAddress[] mongoServers = new ServerAddress[config.size()];
 
