@@ -294,6 +294,6 @@ public class TestAvailabilityFailover {
         }
 
         assertEquals("Should have thrown a CaveStorageException", CaveStorageException.class, exception.getClass());
-        
+
     }
 }
