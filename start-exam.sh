@@ -14,7 +14,7 @@ export SKYCAVE_SUBSCRIPTION_IMPLEMENTATION=cloud.cave.service.CircuitBreakerSubs
 export SKYCAVE_SUBSCRIPTIONSERVER=cavereg.baerbak.com:4567
 
 # = Cave storage
-export SKYCAVE_CAVESTORAGE_IMPLEMENTATION=cloud.cave.service.MongoStorage
+export SKYCAVE_CAVESTORAGE_IMPLEMENTATION=cloud.cave.service.MongoExamBStorage
 export SKYCAVE_DBSERVER=$DB0_PORT_27017_TCP_ADDR:$DB0_PORT_27017_TCP_PORT
 
 # = Weather service
