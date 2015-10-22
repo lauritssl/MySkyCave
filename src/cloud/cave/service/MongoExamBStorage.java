@@ -196,11 +196,11 @@ public class MongoExamBStorage implements CaveStorage {
         mongo = new MongoClient(Arrays.asList(mongoServers));
 
         db = mongo.getDatabase("exam_cave");
-        rooms = db.getCollection("rooms_collection");
+        rooms = db.getCollection("room_collection");
         players = db.getCollection("player_collection");
         messages = db.getCollection("messages");
         cache = db.getCollection("cache");
-        
+
 
     }
 
