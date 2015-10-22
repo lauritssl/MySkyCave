@@ -140,6 +140,16 @@ public class SaboteurMongoStorage implements CaveStorage {
     }
 
     @Override
+    public int computeCountOfRooms() {
+        if(failNext){
+            failNext = false;
+            throw new MongoException("DB_TIMEOUT_EXCEPTION");
+        }else{
+            return storrage.computeCountOfRooms();
+        }
+    }
+
+    @Override
     public void initialize(ServerConfiguration config) {
         if(failNext){
             failNext = false;

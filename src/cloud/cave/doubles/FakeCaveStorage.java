@@ -156,6 +156,11 @@ public class FakeCaveStorage implements CaveStorage {
     cacheOfOnlinePlayer.remove(playerID);
   }
 
+  @Override
+  public int computeCountOfRooms() {
+    return roomMap.size();
+  }
+
   /** Compute the list of players in the cave.
    * 
    * @return list of all players in the cave.

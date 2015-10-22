@@ -111,4 +111,6 @@ public interface CaveStorage extends ExternalService {
 
   void sessionRemove(String playerID);
 
+  int computeCountOfRooms();
+
 }

@@ -174,6 +174,11 @@ public class MongoStorage implements CaveStorage {
     }
 
     @Override
+    public int computeCountOfRooms() {
+        return (int) rooms.count();
+    }
+
+    @Override
     public void initialize(ServerConfiguration config) {
         this.configuration = config;
 

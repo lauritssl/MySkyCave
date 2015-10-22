@@ -197,4 +197,9 @@ class SpyCaveStorage implements CaveStorage {
     decoratee.sessionRemove(playerID);
   }
 
+  @Override
+  public int computeCountOfRooms() {
+    return  decoratee.computeCountOfRooms();
+  }
+
 }

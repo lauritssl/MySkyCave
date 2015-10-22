@@ -128,6 +128,15 @@ public class FailsafeMongoStorage implements CaveStorage {
     }
 
     @Override
+    public int computeCountOfRooms() {
+        try {
+            return mongo.computeCountOfRooms();
+        } catch (MongoException e){
+            throw new CaveStorageException("DB_TIMEOUT_EXCEPTION", e);
+        }
+    }
+
+    @Override
     public void initialize(ServerConfiguration config) {
         try {
             configuration = config;
