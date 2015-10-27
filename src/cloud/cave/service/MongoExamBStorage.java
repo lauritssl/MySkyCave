@@ -20,7 +20,7 @@ import static com.mongodb.client.model.Filters.eq;
 import static com.mongodb.client.model.Filters.ne;
 
 /**
- * Created by Soren and Laurits on 15/09/15.
+ * Created by Soren and Laurits on 15/09/15. Exams test
  */
 public class MongoExamBStorage implements CaveStorage {
     private MongoClient mongo;
