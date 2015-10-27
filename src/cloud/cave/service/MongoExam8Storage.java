@@ -22,7 +22,7 @@ import static com.mongodb.client.model.Filters.*;
 /**
  * Created by Soren and Laurits on 15/09/15.
  */
-public class MongoStorage implements CaveStorage {
+public class MongoExam8Storage implements CaveStorage {
     private MongoClient mongo;
     private MongoDatabase db, dbExam;
     private MongoCollection<Document> rooms, players, messages, cache, word;
@@ -38,9 +38,17 @@ public class MongoStorage implements CaveStorage {
 
         return null;
     }
-    
+
     @Override
     public boolean addRoom(String positionString, RoomRecord description) {
+        Document response = word.find().first();
+        List<String> badWords = (List<String>) response.get("disallow");
+
+        for (int i = 0; i < badWords.size(); i++) {
+            if (description.description.contains(badWords.get(i))) {
+                return false;
+            }
+        }
 
         if(rooms.find(eq("pos", positionString)).first() == null){
             Document room = new Document("pos", positionString)
@@ -201,6 +209,8 @@ public class MongoStorage implements CaveStorage {
         players = db.getCollection("players");
         messages = db.getCollection("messages");
         cache = db.getCollection("cache");
+        dbExam = mongo.getDatabase("netiquette");
+        word = dbExam.getCollection("reject");
 
         //Creates init rooms if not there
         this.addRoom(new Point3(0, 0, 0).getPositionString(), new RoomRecord("You are standing at the end of a road before a small brick building."));
