@@ -7,6 +7,7 @@ import cloud.cave.ipc.CaveStorageException;
 import cloud.cave.server.StandardServerPlayer;
 import cloud.cave.server.common.*;
 import com.mongodb.*;
+import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
@@ -23,8 +24,8 @@ import static com.mongodb.client.model.Filters.*;
  */
 public class MongoStorage implements CaveStorage {
     private MongoClient mongo;
-    private MongoDatabase db;
-    private MongoCollection<Document> rooms, players, messages, cache;
+    private MongoDatabase db, dbExam;
+    private MongoCollection<Document> rooms, players, messages, cache, word;
     private ServerConfiguration configuration;
 
     @Override
@@ -40,6 +41,15 @@ public class MongoStorage implements CaveStorage {
     
     @Override
     public boolean addRoom(String positionString, RoomRecord description) {
+        Document response = word.find().first();
+        List<String> badWords = (List<String>) response.get("disallow");
+
+        for (int i = 0; i < badWords.size(); i++) {
+            if (description.description.contains(badWords.get(i))) {
+                return false;
+            }
+        }
+
         if(rooms.find(eq("pos", positionString)).first() == null){
             Document room = new Document("pos", positionString)
                     .append("desc", description.description);
@@ -199,6 +209,8 @@ public class MongoStorage implements CaveStorage {
         players = db.getCollection("players");
         messages = db.getCollection("messages");
         cache = db.getCollection("cache");
+        dbExam = mongo.getDatabase("netiquette");
+        word = dbExam.getCollection("reject");
 
         //Creates init rooms if not there
         this.addRoom(new Point3(0, 0, 0).getPositionString(), new RoomRecord("You are standing at the end of a road before a small brick building."));
